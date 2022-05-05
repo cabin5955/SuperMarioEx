@@ -1,17 +1,17 @@
 //
-//  game_b2mario.hpp
+//  game_tilemap.hpp
 //  SuperMarioEx
 //
-//  Created by chen caibin on 2022/4/13.
+//  Created by chen caibin on 2022/4/27.
 //
 
-#ifndef game_b2mario_hpp
-#define game_b2mario_hpp
+#ifndef game_tilemap_hpp
+#define game_tilemap_hpp
 
 #include "glad.h"
 #include <vector>
-#include "scene.h"
 #include <string>
+#include "scene.h"
 #include "resource_manager.hpp"
 #include "sprite_renderer.hpp"
 #include "text_renderer.hpp"
@@ -25,14 +25,10 @@
 #include "tmx.h"
 #include "map_layer.hpp"
 #include "tile.hpp"
-#include "b2player.hpp"
+#include "player.hpp"
 #include "tilemap_helper.hpp"
-#include <box2d/box2d.h>
-#include "b2debugdraw.h"
-#include "brick.hpp"
-#include "coin.hpp"
 
-class GameB2Mario:public IScene
+class GameTilemap:public IScene
 {
 public:
     
@@ -47,11 +43,11 @@ public:
     
     void Release();
     
-    static GameB2Mario* GetInstance()
+    static GameTilemap* GetInstance()
     {
         if(s_instance == nullptr)
         {
-            s_instance = new GameB2Mario();
+            s_instance = new GameTilemap();
         }
         return s_instance;
     }
@@ -61,31 +57,23 @@ private:
     const GLchar *FullPath(const GLchar *fileName);
     GLchar  fullPath[1024];
     GLfloat deltaTime;
-    b2World* world;
     
     SpriteRenderer      *spriteRenderer;
     SpriteRenderer      *uiRenderer;
     TextRenderer        *Text;
     ColorRenderer       *colorRenderer;
 
-    B2Player *player;
-    Button *GoButton_Right,*GoButton_Left,*JumpButton;
-
     Camera2D camera;
     
-    std::vector<Brick*> brickList;
-    std::vector<Coin*> coinList;
+    GameTilemap(){}
     
-    void UpdateCameraCenterInsideMap();
-    
-    GameB2Mario(){}
-    
-    ~GameB2Mario(){}
+    ~GameTilemap(){}
 
-    GameB2Mario(const GameB2Mario&);
-    GameB2Mario& operator =(const GameB2Mario&);
+    GameTilemap(const GameTilemap&);
+    GameTilemap& operator =(const GameTilemap&);
     
-    static GameB2Mario *s_instance;
+    static GameTilemap *s_instance;
 };
 
-#endif /* game_b2mario_hpp */
+
+#endif /* game_tilemap_hpp */

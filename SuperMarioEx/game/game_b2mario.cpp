@@ -6,11 +6,14 @@
 //
 
 #include "game_b2mario.hpp"
+#include "world_contact_listener.hpp"
 
 #define PLAYER_HOR_SPD 200.0f
 float ZOOM = 2.0f;
 
 GameB2Mario* GameB2Mario::s_instance = nullptr;
+
+WorldContactListener myContactListenerInstance;
 
 void GoLeft_b2mario()
 {
@@ -80,38 +83,27 @@ void GameB2Mario::Init(unsigned int width, unsigned int height)
                             ResourceManager::GetTexture("arrow"),
                             Jump_b2mario,0);
     
-    player = new Player({ 300, 100 });
+    g_debugDraw.Create();
+    b2Vec2 gravity = b2Vec2(0.0f, -8.0f);
+    world = new b2World(gravity);
+    world->SetDebugDraw(&g_debugDraw);
+    world->SetContactListener(&myContactListenerInstance);
+    
+    player = new B2Player(world, { 300, 100 });
     player->speed = 0;
     player->canJump = false;
+    
+    b2BodyDef groundBodyDef;
+    groundBodyDef.position.Set(this->Width/2.0/PPM, 0.0f/PPM);
+    b2Body* groundBody = world->CreateBody(&groundBodyDef);
+    b2PolygonShape groundBox;
+    groundBox.SetAsBox(this->Width/2.0f/PPM, 5.0f/PPM);
+    groundBody->CreateFixture(&groundBox, 0.0f);
     
     camera.target = {player->Position.x*ZOOM,player->Position.y*ZOOM};
     camera.rotation = 0.0f;
     camera.offset = { width/(2.0f*ZOOM), height/(2.0f*ZOOM)};
     camera.zoom = ZOOM;
-    
-    g_debugDraw.Create();
-    
-    b2Vec2 gravity = b2Vec2(0.0f, -8.0f);
-    world = new b2World(gravity);
-    world->SetDebugDraw(&g_debugDraw);
-    
-    b2BodyDef playerBodyDef;
-    playerBodyDef.type = b2_dynamicBody;
-    playerBodyDef.position.Set(player->Position.x/PPM,(this->Height-player->Position.y)/PPM);
-    playerBodyDef.userData.pointer = reinterpret_cast<uintptr_t>(&player);;
-    body = world->CreateBody(&playerBodyDef);
-    
-    b2PolygonShape playerShape;
-    playerShape.SetAsBox(20/2.0f/PPM, 20/2.0f/PPM);
-    body->CreateFixture(&playerShape, 1.0f);
-    
-    b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(this->Width/2.0/PPM, 0.0f/PPM);
- 
-    b2Body* groundBody = world->CreateBody(&groundBodyDef);
-    b2PolygonShape groundBox;
-    groundBox.SetAsBox(this->Width/2.0f/PPM, 5.0f/PPM);
-    groundBody->CreateFixture(&groundBox, 0.0f);
 }
 
 void GameB2Mario::OnEnter(){
@@ -128,18 +120,27 @@ void GameB2Mario::OnEnter(){
     
     for (int i = 0; i < TilemapHelper::gameItems.size(); i++)
     {
-        glm::vec2 pos = {TilemapHelper::gameItems[i].position.x,TilemapHelper::gameItems[i].position.y};
-        glm::vec2 size = {TilemapHelper::gameItems[i].size.x,TilemapHelper::gameItems[i].size.y};
-        b2BodyDef bd;        
-        int map_y = map->height-(pos.y+size.y)/map->tile_height;
-        int py = map_y * map->tile_height + size.y/2.0f;
-        float base = this->Height - (map->height)*map->tile_height;
-        bd.position.Set((pos.x+size.x/2.0f)/PPM, (py+base)/PPM);
-        b2Body* body = world->CreateBody(&bd);
+        EnvItem *item = &TilemapHelper::gameItems[i];
+        if(strcmp(item->name,"Bricks")==0){
+            this->brickList.push_back(new Brick(this->world, map, item));
+        }
+        else if(strcmp(item->name,"Coins")==0){
+            this->coinList.push_back(new Coin(this->world, map, item));
+        }
+        else{
+            glm::vec2 pos = {item->position.x,item->position.y};
+            glm::vec2 size = {item->size.x,item->size.y};
+            b2BodyDef bd;
+            int map_y = map->height-(pos.y+size.y)/map->tile_height;
+            int py = map_y * map->tile_height + size.y/2.0f;
+            float base = this->Height - (map->height)*map->tile_height;
+            bd.position.Set((pos.x+size.x/2.0f)/PPM, (py+base)/PPM);
+            b2Body* body = world->CreateBody(&bd);
 
-        b2PolygonShape shape;
-        shape.SetAsBox(size.x/2.0f/PPM, size.y/2.0f/PPM);
-        body->CreateFixture(&shape, 0.0f);
+            b2PolygonShape shape;
+            shape.SetAsBox(size.x/2.0f/PPM, size.y/2.0f/PPM);
+            body->CreateFixture(&shape, 0.0f);
+        }
     }
     
     glm::mat4 projection2d = glm::ortho(0.0f, static_cast<GLfloat>(this->Width),
@@ -169,22 +170,23 @@ void GameB2Mario::KeyboardInput(int virtual_key, char pressed)
 
 void GameB2Mario::Update(GLfloat dt)
 {
+    b2Body *body = player->body;
     if(GoButton_Right->mouseState == MOUSE_PRESSED)
     {
         player->flipX = false;
         if(body->GetLinearVelocity().x <= 1)
-            body->ApplyLinearImpulse({0.1f,0}, body->GetWorldCenter(), true);
+            body->ApplyLinearImpulse({0.01f,0}, body->GetWorldCenter(), true);
     }
     else if(GoButton_Left->mouseState == MOUSE_PRESSED)
     {
         player->flipX = true;
         if (body->GetLinearVelocity().x >= -1)
-            body->ApplyLinearImpulse({-0.1f,0}, body->GetWorldCenter(), true);
+            body->ApplyLinearImpulse({-0.01f,0}, body->GetWorldCenter(), true);
     }
     if(JumpButton->mouseState == MOUSE_PRESSED)
     {
         if (player->canJump){
-            body->ApplyLinearImpulse({0,0.16f}, body->GetWorldCenter(), true);
+            body->ApplyLinearImpulse({0,0.1f}, body->GetWorldCenter(), true);
         }
     }
     
@@ -232,7 +234,7 @@ void GameB2Mario::Render()
     spriteShader.setMat4("view", GetCameraMatrix2D(camera));
     //spriteShader.setMat4("view",glm::mat4(1.0f));
     
-    Shader tilemapShader = ResourceManager::GetShader("tilemap");
+    Shader tilemapShader = ResourceManager::GetShader("tilebatch");
     tilemapShader.use();
     tilemapShader.setMat4("view", GetCameraMatrix2D(camera));
     //tilemapShader.setMat4("view",glm::mat4(1.0f));

@@ -45,16 +45,18 @@ void TilemapHelper::ex_free_tex(void *ptr)
     free(ptr);
 }
 
-void TilemapHelper::get_tilemap_objects(tmx_map *map, tmx_object_group *objgr) {
+void TilemapHelper::get_tilemap_objects(const char *name, tmx_object_group *objgr) {
     
     tmx_object *head = objgr->head;
+    
     while (head) {
         if (head->visible) {
             if (head->obj_type == OT_SQUARE) {
-                printf("object square(%f,%f) wh(%f,%f)\n",head->x,head->y,head->width,head->height);
+                printf("object square(%f,%f) order %d \n",head->x,head->y,objgr->draworder);
                 Color clr = PINK;
                 clr.a *= 0.5f;
                 EnvItem item = {{head->x,head->y},{head->width, head->height},4,clr};
+                strcpy(item.name, name);
                 gameItems.push_back(item);
             }
             else if (head->obj_type  == OT_POLYGON) {
@@ -150,15 +152,16 @@ void TilemapHelper::get_tilemap_all_layers(tmx_map *map, tmx_layer *layers) {
                 get_tilemap_all_layers(map, layers->content.group_head);
             }
             else if (layers->type == L_OBJGR) {
-                get_tilemap_objects(map, layers->content.objgr);
+                printf("L_OBJGR layer %s\n",layers->name);
+                get_tilemap_objects(layers->name, layers->content.objgr);
             }
             else if (layers->type == L_IMAGE) {
                 get_tilemap_image_layer(layers->content.image);
             }
             else if (layers->type == L_LAYER) {
-                printf("layer %s\n",layers->name);
+                printf("L_LAYER layer %s\n",layers->name);
                 Texture2D *tex = (Texture2D*)get_first_tile_image(map, layers);
-                MapLayer *layer = new MapLayer(ResourceManager::GetShader("tilemap"),*tex,map,layers);
+                MapLayer *layer = new MapLayer(ResourceManager::GetShader("tilebatch"),*tex,map,layers);
                 mapLayers.push_back(layer);
             }
         }

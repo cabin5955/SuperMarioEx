@@ -19,6 +19,7 @@ typedef struct EnvItem {
     glm::vec2 size;
     int blocking;
     Color color;
+    char name[20];
 } EnvItem;
 
 class Player:public GameObject {

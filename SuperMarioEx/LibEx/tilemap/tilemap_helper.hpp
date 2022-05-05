@@ -24,7 +24,7 @@ class TilemapHelper {
 public:
     static void* ex_tex_loader(const char *path);
     static void ex_free_tex(void *ptr);
-    static void get_tilemap_objects(tmx_map *map, tmx_object_group *objgr);
+    static void get_tilemap_objects(const char *name, tmx_object_group *objgr);
     static void get_tilemap_tile(void *image, unsigned int sx, unsigned int sy, unsigned int sw, unsigned int sh,
                                  unsigned int dx, unsigned int dy, float opacity, unsigned int flags);
 
