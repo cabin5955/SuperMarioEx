@@ -1,12 +1,12 @@
 //
-//  animation2d.hpp
+//  sprites_animation.hpp
 //  SuperMarioEx
 //
 //  Created by chen caibin on 2022/4/3.
 //
 
-#ifndef animation2d_hpp
-#define animation2d_hpp
+#ifndef sprites_animation_hpp
+#define sprites_animation_hpp
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,14 +14,14 @@
 #include <string>
 #include "texture.hpp"
 
-class Animation2D{
+class SpritesAnimation{
 private:
     std::string _basePath;
     unsigned _frameCount;
     float _timer;
     bool _loop;
 public:
-    Animation2D(std::string basePath, unsigned frameCount, bool loop);
+    SpritesAnimation(std::string basePath, unsigned frameCount, bool loop);
     void Preload();
     unsigned SetTimer(float time);
     std::string GetCurrentFrame();
@@ -29,4 +29,4 @@ public:
 };
 
 
-#endif /* animation2d_hpp */
+#endif /* sprites_animation_hpp */

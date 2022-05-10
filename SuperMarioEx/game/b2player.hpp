@@ -13,6 +13,9 @@
 #include "b2debugdraw.h"
 
 class B2Player:public Player {
+private:
+    b2World* world;
+
 public:
     
     static const short NOTHING_BIT = 0;
@@ -27,8 +30,6 @@ public:
     static const short ITEM_BIT = 256;
     static const short MARIO_HEAD_BIT = 512;
     static const short FIREBALL_BIT = 1024;
-    
-    b2World* world;
     b2Body* body;
     
     B2Player(b2World *world, glm::vec2 pos);

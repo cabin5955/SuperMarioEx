@@ -8,7 +8,7 @@
 #ifndef player_hpp
 #define player_hpp
 
-#include "animation2d.hpp"
+#include "sprites_animation.hpp"
 #include "game_object.hpp"
 
 #define G 400
@@ -32,12 +32,12 @@ public:
     bool canJump;
     bool flipX;
     
-    Animation2D idle_ani;
-    Animation2D climb_ani;
-    Animation2D hurt_ani;
-    Animation2D jump_ani;
-    Animation2D run_ani;
-    Animation2D crouch_ani;
+    SpritesAnimation idle_ani;
+    SpritesAnimation climb_ani;
+    SpritesAnimation hurt_ani;
+    SpritesAnimation jump_ani;
+    SpritesAnimation run_ani;
+    SpritesAnimation crouch_ani;
     
     Player(glm::vec2 pos);
     void Update(EnvItem *envItems, int envItemsLength);

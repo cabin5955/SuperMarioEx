@@ -13,7 +13,7 @@ Brick::Brick(b2World *world, tmx_map *map, EnvItem *item):InteractiveTileObject(
 }
 
 void Brick::onHeadHit(B2Player &player){
-    printf("on head hit brick!");
+    printf("on head hit brick!\n");
     setCategoryFilter(B2Player::DESTROYED_BIT);
     MapLayer::Cell &cell = getCell();
     int layer = cell.layerIndex;
