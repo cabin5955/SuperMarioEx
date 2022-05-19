@@ -152,7 +152,7 @@ void GamePlatformer::OnExit(){
     
 }
 
-void GamePlatformer::KeyboardInput(int virtual_key, char pressed)
+void GamePlatformer::KeyboardInput(ExKeyCode keycode, ExKeyAction action)
 {
     
 }

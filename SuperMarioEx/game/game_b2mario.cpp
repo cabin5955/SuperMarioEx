@@ -9,6 +9,8 @@
 #include "world_contact_listener.hpp"
 #include "subtexture.hpp"
 #include "oposum.hpp"
+#include "goomba.hpp"
+#include "turtle.hpp"
 
 #define PLAYER_HOR_SPD 200.0f
 float ZOOM = 2.0f;
@@ -17,8 +19,11 @@ GameB2Mario* GameB2Mario::s_instance = nullptr;
 
 WorldContactListener myContactListenerInstance;
 //SubTexture2D *oposumSub;
-Oposum *oposums[100];
-int oposumNum = 0;
+Goomba *goombas[20];
+int goombaNum = 0;
+
+Turtle *turtles[20];
+int turtleNum = 0;
 
 void GoLeft_b2mario()
 {
@@ -42,6 +47,8 @@ void GameB2Mario::Init(unsigned int width, unsigned int height)
     char des[1024] = {0};
     
     ResourceManager::LoadTexture(Global::ResFullPath(des, "oposum.png"), GL_TRUE, "oposum");
+    ResourceManager::LoadTexture(Global::ResFullPath(des, "goomba.png"), GL_TRUE, "goomba");
+    ResourceManager::LoadTexture(Global::ResFullPath(des, "turtle.png"), GL_TRUE, "turtle");
     
     // 配置着色器
     glm::mat4 projection2d = glm::ortho(0.0f, static_cast<GLfloat>(this->Width),
@@ -107,13 +114,25 @@ void GameB2Mario::Init(unsigned int width, unsigned int height)
     groundBox.SetAsBox(this->Width/2.0f/PPM, 5.0f/PPM);
     groundBody->CreateFixture(&groundBox, 0.0f);
     
+    // Platform
+    {
+        b2BodyDef bd;
+        bd.position.Set(2000.0f/PPM, 300.0f/PPM);
+        b2Body* body = world->CreateBody(&bd);
+
+        b2PolygonShape shape;
+        shape.SetAsBox(4000.0f/PPM, 10.0f/PPM);
+        b2FixtureDef fdef;
+        fdef.filter.categoryBits = B2Player::PLATFORM_BIT;
+        fdef.shape = &shape;
+        body->CreateFixture(&fdef);
+    }
+    
     camera.target = {player->Position.x*ZOOM,player->Position.y*ZOOM};
     camera.rotation = 0.0f;
     camera.offset = { width/(2.0f*ZOOM), height/(2.0f*ZOOM)};
     camera.zoom = ZOOM;
-    
-    //Texture2D oposumTex = ResourceManager::GetTexture("oposum");
-    //oposumSub = SubTexture2D::CreateFromCoords(oposumTex, {0,0}, {36,28});
+
 }
 
 void GameB2Mario::OnEnter(){
@@ -139,8 +158,13 @@ void GameB2Mario::OnEnter(){
         }
         else if(strcmp(item->name,"Goombas")==0){
             glm::vec2 pos = {item->position.x,item->position.y};
-            oposums[oposumNum] = new Oposum(world,pos);
-            oposumNum++;
+            goombas[goombaNum] = new Goomba(world, pos);
+            goombaNum++;
+        }
+        else if(strcmp(item->name,"Turtles")==0){
+            glm::vec2 pos = {item->position.x,item->position.y};
+            turtles[turtleNum] = new Turtle(world, pos);
+            turtleNum++;
         }
         else{
             glm::vec2 pos = {item->position.x,item->position.y};
@@ -154,7 +178,19 @@ void GameB2Mario::OnEnter(){
 
             b2PolygonShape shape;
             shape.SetAsBox(size.x/2.0f/PPM, size.y/2.0f/PPM);
-            body->CreateFixture(&shape, 0.0f);
+            
+            b2FixtureDef fdef;
+            fdef.filter.categoryBits = B2Player::OBJECT_BIT;
+            fdef.filter.maskBits = B2Player::GROUND_BIT |
+                    B2Player::COIN_BIT |
+                    B2Player::BRICK_BIT |
+                    B2Player::ENEMY_BIT |
+                    B2Player::OBJECT_BIT |
+                    B2Player::MARIO_BIT;
+            
+            fdef.shape = &shape;
+            //fdef.density = 1.0f;
+            body->CreateFixture(&fdef);
         }
     }
     
@@ -178,9 +214,35 @@ void GameB2Mario::OnExit(){
     
 }
 
-void GameB2Mario::KeyboardInput(int virtual_key, char pressed)
+void GameB2Mario::KeyboardInput(ExKeyCode keyCode, ExKeyAction action)
 {
-    
+    //if(action == ExActionPressed)
+    {
+        b2Body *body = player->body;
+        switch (keyCode) {
+            case ExKeyLeft:
+                player->flipX = true;
+                if (body->GetLinearVelocity().x >= -1){
+                    body->ApplyLinearImpulse({-0.02f,0}, body->GetWorldCenter(), true);
+                }
+                break;
+            case ExKeyRight:
+                player->flipX = false;
+                if(body->GetLinearVelocity().x <= 1){
+                    body->ApplyLinearImpulse({0.02f,0}, body->GetWorldCenter(), true);
+                }
+                break;
+            case ExKeyUp:
+                if (player->canJump){
+                    body->ApplyLinearImpulse({0,0.05f}, body->GetWorldCenter(), true);
+                }
+                break;
+            case ExKeyDown:
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void GameB2Mario::Update(GLfloat dt)
@@ -224,8 +286,13 @@ void GameB2Mario::Update(GLfloat dt)
     //player->Update(&TilemapHelper::gameItems[0], (int)TilemapHelper::gameItems.size());
     player->Update();
     
-    for (int i=0; i<oposumNum; i++) {
-        oposums[i]->update(dt);
+    for (int i=0; i<goombaNum; i++) {
+        goombas[i]->Update(dt);
+    }
+    
+    for (int i=0; i<turtleNum; i++)
+    {
+        turtles[i]->Update(dt);
     }
     
     //UpdateCameraCenter(&camera, &player, this->Width, this->Height);
@@ -237,11 +304,6 @@ void GameB2Mario::Update(GLfloat dt)
     
     b2Vec2 pos = body->GetPosition();
     player->Position = {pos.x*PPM-0.5f*player->Size.x,this->Height-pos.y*PPM+0.4f*player->Size.y, 0};
-    
-    for (int i=0; i<oposumNum; i++) {
-        pos = oposums[i]->body->GetPosition();
-        oposums[i]->Position = {pos.x*PPM-0.5f*oposums[i]->Size.x,this->Height-pos.y*PPM-0.6f*oposums[i]->Size.y};
-    }
     
     //if(ZOOM < 2.0f){ ZOOM += 0.002f;camera.zoom = ZOOM;}
 }
@@ -276,8 +338,14 @@ void GameB2Mario::Render()
     player->Draw(*spriteRenderer);
     
     //spriteRenderer->DrawSprite(*oposumSub, {100,100},{36,28});
-    for (int i=0; i<oposumNum; i++) {
-        oposums[i]->Draw(*spriteRenderer);
+    for (int i=0; i<goombaNum; i++)
+    {
+        goombas[i]->Draw(*spriteRenderer);
+    }
+    
+    for (int i=0; i<turtleNum; i++)
+    {
+        turtles[i]->Draw(*spriteRenderer);
     }
     
 //    for(int i = 0; i < tiles.size(); i++)
@@ -300,8 +368,8 @@ void GameB2Mario::Render()
     flags += b2Draw::e_shapeBit;
     flags += b2Draw::e_jointBit;
     g_debugDraw.SetFlags(flags);
-//    world->DebugDraw();
-//    g_debugDraw.Flush(GetCameraMatrix2D(camera_b2));
+    world->DebugDraw();
+    g_debugDraw.Flush(GetCameraMatrix2D(camera_b2));
     
     //g_debugDraw.Flush(glm::mat4(1.0f));
 }

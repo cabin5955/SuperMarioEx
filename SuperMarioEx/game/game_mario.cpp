@@ -127,7 +127,7 @@ void GameMario::OnExit(){
     
 }
 
-void GameMario::KeyboardInput(int virtual_key, char pressed)
+void GameMario::KeyboardInput(ExKeyCode keycode, ExKeyAction action)
 {
     
 }

@@ -118,7 +118,7 @@ void CommonInit(){
     
 }
 
-- (void)KeyboardInputWhithKey:(int) key Pressed:(char)pressed{
+- (void)KeyboardInputWhithKey:(ExKeyCode) key Pressed:(ExKeyAction)pressed{
     Director::GetInstance()->GetTopScene()->KeyboardInput(key,pressed);
 }
 

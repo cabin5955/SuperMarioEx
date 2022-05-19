@@ -6,11 +6,12 @@
 //
 
 #include "glad.h"
+#include "LibEx/libex.h"
 #include <UIKit/UIKit.h>
 
 @interface GameWrapper : NSObject
 - (void)InitWidth:(GLfloat) width Height:(GLfloat) height;
-- (void)KeyboardInputWhithKey:(int) key Pressed:(char)pressed;
+- (void)KeyboardInputWhithKey:(ExKeyCode) key Pressed:(ExKeyAction)pressed;
 - (void)TouchMoveOffsetX:(double)x OffsetY:(double)y;
 - (void)TouchBeganPosX:(double)x PosY:(double)y;
 - (void)TouchEndedPosX:(double)x PosY:(double)y;

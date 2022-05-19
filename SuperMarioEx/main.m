@@ -6,6 +6,7 @@
 #include "file_compat.h"
 #include "glfm.h"
 #include "game_wrapper.h"
+#include "LibEx/libex.h"
 
 typedef struct {
 
@@ -95,6 +96,8 @@ static bool onTouch(GLFMDisplay *display, int touch, GLFMTouchPhase phase, doubl
 
 static bool onKey(GLFMDisplay *display, GLFMKey keyCode, GLFMKeyAction action, int modifiers) {
     bool handled = false;
+    [wrapper KeyboardInputWhithKey:(ExKeyCode)keyCode Pressed:(ExKeyAction)action];
+    
     if (action == GLFMKeyActionPressed) {
         ExampleApp *app = glfmGetUserData(display);
         app->needsRedraw = true;

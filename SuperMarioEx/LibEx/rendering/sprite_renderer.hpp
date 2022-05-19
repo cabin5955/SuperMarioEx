@@ -41,6 +41,7 @@ public:
     
     void DrawSprite(SubTexture2D &texture, glm::vec2 position,
                     glm::vec2 size = glm::vec2(128, 128),
+                    bool flipX = false,
                     glm::vec3 rotateAxis = glm::vec3(0.0f,0.0f,1.0f),
                     GLfloat rotateAngle = 0.0f, Color color = WHITE);
     

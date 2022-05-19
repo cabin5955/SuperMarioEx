@@ -9,6 +9,7 @@
 #define scene_h
 
 #include "glad.h"
+#include "libex.h"
 #include <vector>
 
 class IScene{
@@ -19,7 +20,7 @@ public:
     virtual void OnEnter()=0;
     virtual void OnExit()=0;
     // GameLoop
-    virtual void KeyboardInput(int virtual_key, char pressed)=0;
+    virtual void KeyboardInput(ExKeyCode keycode, ExKeyAction action)=0;
     virtual void Update(GLfloat dt)=0;
     virtual void Render()=0;
     

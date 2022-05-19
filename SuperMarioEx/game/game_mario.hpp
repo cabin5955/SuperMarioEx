@@ -27,6 +27,7 @@
 #include "tile.hpp"
 #include "player.hpp"
 #include "tilemap_helper.hpp"
+#include "libex.h"
 
 class GameMario:public IScene
 {
@@ -37,7 +38,7 @@ public:
     void OnEnter();
     void OnExit();
     // GameLoop
-    void KeyboardInput(int virtual_key, char pressed);
+    void KeyboardInput(ExKeyCode keycode, ExKeyAction action);
     void Update(GLfloat dt);
     void Render();
     

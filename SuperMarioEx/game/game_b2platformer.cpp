@@ -193,7 +193,7 @@ void GameB2Platformer::OnExit(){
     
 }
 
-void GameB2Platformer::KeyboardInput(int virtual_key, char pressed)
+void GameB2Platformer::KeyboardInput(ExKeyCode keycode, ExKeyAction action)
 {
     
 }

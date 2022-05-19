@@ -82,7 +82,7 @@ void GameTilemap::OnExit(){
     
 }
 
-void GameTilemap::KeyboardInput(int virtual_key, char pressed)
+void GameTilemap::KeyboardInput(ExKeyCode keycode, ExKeyAction action)
 {
     
 }

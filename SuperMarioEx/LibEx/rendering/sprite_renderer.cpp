@@ -83,7 +83,7 @@ void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position, glm::vec
     glBindVertexArray(0);
 }
 
-void SpriteRenderer::DrawSprite(SubTexture2D &texture, glm::vec2 position, glm::vec2 size, glm::vec3 axis,GLfloat rotate, Color color)
+void SpriteRenderer::DrawSprite(SubTexture2D &texture, glm::vec2 position, glm::vec2 size, bool flipX, glm::vec3 axis,GLfloat rotate, Color color)
 {
     // Prepare transformations
     this->shader.use();
@@ -103,13 +103,26 @@ void SpriteRenderer::DrawSprite(SubTexture2D &texture, glm::vec2 position, glm::
 
     glActiveTexture(GL_TEXTURE0);
     texture.GetTexture().Bind();
+    
     const glm::vec2* texCoords = texture.GetTexCoords();
+    glm::vec2 texCoordArr[4];
+    if(flipX){
+        texCoordArr[0] = texCoords[1];
+        texCoordArr[1] = texCoords[0];
+        texCoordArr[2] = texCoords[3];
+        texCoordArr[3] = texCoords[2];
+    }
+    else{
+        for(int i = 0;i < 4;i++)
+            texCoordArr[i] = texCoords[i];
+    }
+        
     
     Vertex vertices[] = {
-        {{0.0f, 1.0f}, texCoords[3]},
-        {{1.0f, 1.0f}, texCoords[2]},
-        {{1.0f, 0.0f}, texCoords[1]},
-        {{0.0f, 0.0f}, texCoords[0]}
+        {{0.0f, 1.0f}, texCoordArr[3]},
+        {{1.0f, 1.0f}, texCoordArr[2]},
+        {{1.0f, 0.0f}, texCoordArr[1]},
+        {{0.0f, 0.0f}, texCoordArr[0]}
     };
     glBindBuffer(GL_ARRAY_BUFFER, m_QuadVB);
     glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * sizeof(Vertex), vertices);

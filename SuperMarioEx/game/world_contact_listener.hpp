@@ -12,6 +12,7 @@
 class WorldContactListener : public b2ContactListener
 {
     void EndContact(b2Contact* contact);
+    void BeginContact(b2Contact* contact);
 };
 
 #endif /* world_contact_listener_hpp */

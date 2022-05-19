@@ -16,7 +16,8 @@
 class Enemy {
 protected:
     b2World* world;
-    virtual void defineEnemy() = 0;
+    bool autoDestroyed;
+    bool setToAutoDestroyed;
     
 public:
     glm::vec2  Position, Size;
@@ -24,16 +25,19 @@ public:
     float       RotationAngle;
     
     float timerAnimation;
-    float speed;
+    b2Vec2 velocity;
     bool flipX;
     b2Body* body;
     
     Enemy(b2World *world, glm::vec2 pos);
     
-    virtual void update(float dt) = 0;
-    virtual void hitOnHead(const B2Player &player) = 0;
-    virtual void hitByEnemy(const Enemy &enemy) = 0;
+    virtual void Update(float dt) = 0;
+    virtual void HitOnHead(const B2Player &player) = 0;
+    virtual void HitByEnemy(const Enemy &enemy) = 0;
     virtual void Draw(SpriteRenderer &renderer) = 0;
+    
+    void ReverseVelocity(bool x, bool y);
+    void DropDownDestroyed();
 };
 
 

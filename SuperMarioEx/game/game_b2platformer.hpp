@@ -24,6 +24,7 @@
 #include "utils.h"
 #include "mesh.hpp"
 #include "b2debugdraw.h"
+#include "libex.h"
 
 class GameB2Platformer:public IScene
 {
@@ -47,7 +48,7 @@ public:
     void OnEnter();
     void OnExit();
     // GameLoop
-    void KeyboardInput(int virtual_key, char pressed);
+    void KeyboardInput(ExKeyCode keycode, ExKeyAction action);
     void Update(GLfloat dt);
     void Render();
     
