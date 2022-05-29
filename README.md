@@ -41,5 +41,5 @@ game目录下包含5个测试类（场景）
 该项目签署了MIT 授权许可，详情请参阅LICENSE.md
 
 ### 鸣谢
-Joey de Vries - learnopengl.com
-Brent Aureli -  SuperMario Bros YouTube Tutorials
++	Joey de Vries - learnopengl.com
++	Brent Aureli -  SuperMario Bros YouTube Tutorials
