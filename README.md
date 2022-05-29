@@ -26,13 +26,13 @@ game目录下包含5个测试类（场景）
 并设置当前要测试的场景。
 
 ### 使用到的框架
-stb - 纹理图片加载
-glfm - 为移动设备和web创建并管理窗口和OpenGL上下文，同时还提供了简单的输入功能。
-freetype2 - 字体
-CocosDenshion - 声音播放
-libtmx - 解析tmx文件（tmx由Tiled地图编辑软件生成）
-Box2D - 物理引擎
-dear imgui - 测试使用
++	stb - 纹理图片加载
++	glfm - 为移动设备和web创建并管理窗口和OpenGL上下文，同时还提供了简单的输入功能。
++	freetype2 - 字体
++	CocosDenshion - 声音播放
++	libtmx - 解析tmx文件（tmx由Tiled地图编辑软件生成）
++	Box2D - 物理引擎
++	dear imgui - 测试使用
 
 ### 作者
 作者：cabin5955
