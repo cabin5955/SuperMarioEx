@@ -16,6 +16,7 @@ class IScene{
 public:
     GLboolean KeysProcessed[1024];
     GLboolean Keys[1024];
+    double fps;
     virtual void Init(unsigned int width, unsigned int height)=0;
     virtual void OnEnter()=0;
     virtual void OnExit()=0;

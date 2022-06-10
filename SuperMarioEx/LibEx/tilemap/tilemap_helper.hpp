@@ -36,6 +36,8 @@ public:
     static std::vector<Tile*> tiles;
     static std::vector<MapLayer*> mapLayers;
     static std::vector<EnvItem> gameItems;
+    static std::vector<MultPointsItem> polyLineItems;
+    static std::vector<MultPointsItem> polygonItems;
 };
 
 #endif /* tilemap_helper_hpp */

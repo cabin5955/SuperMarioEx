@@ -7,37 +7,33 @@
 
 #include "game_b2mario.hpp"
 #include "world_contact_listener.hpp"
-#include "subtexture.hpp"
-#include "oposum.hpp"
-#include "goomba.hpp"
-#include "turtle.hpp"
 
 #define PLAYER_HOR_SPD 200.0f
 float ZOOM = 2.0f;
 
+bool isb2DebugDraw = true;
 GameB2Mario* GameB2Mario::s_instance = nullptr;
 
 WorldContactListener myContactListenerInstance;
-//SubTexture2D *oposumSub;
-Goomba *goombas[20];
-int goombaNum = 0;
-
-Turtle *turtles[20];
-int turtleNum = 0;
 
 void GoLeft_b2mario()
 {
-    
+    GameB2Mario::GetInstance()->PlayerMoveBack();
 }
 
 void GoRight_b2mario()
 {
-    
+    GameB2Mario::GetInstance()->PlayerMoveForward();
 }
 
 void Jump_b2mario()
 {
-    
+    GameB2Mario::GetInstance()->PlayerJump();
+}
+
+void StopMove_b2mario()
+{
+    GameB2Mario::GetInstance()->PlayerStopMove();
 }
 
 void GameB2Mario::Init(unsigned int width, unsigned int height)
@@ -83,13 +79,13 @@ void GameB2Mario::Init(unsigned int width, unsigned int height)
                                 glm::vec2(btn_size*scal,btn_size*scal),
                                 0,
                                 ResourceManager::GetTexture("arrow"),
-                                GoRight_b2mario,0);
+                                GoRight_b2mario,StopMove_b2mario);
     
     GoButton_Left = new Button(this,glm::vec2(this->Width/2-btn_size*scal-btn_size*4,this->Height-128*scal),
                                glm::vec2(btn_size*scal,btn_size*scal),
                                180.0f*DEG2RAD,
                                ResourceManager::GetTexture("arrow"),
-                               GoLeft_b2mario,0);
+                               GoLeft_b2mario,StopMove_b2mario);
     
     JumpButton = new Button(this,glm::vec2(this->Width-btn_size*4,this->Height-128*scal),
                             glm::vec2(btn_size*scal,btn_size*scal),
@@ -97,13 +93,16 @@ void GameB2Mario::Init(unsigned int width, unsigned int height)
                             ResourceManager::GetTexture("arrow"),
                             Jump_b2mario,0);
     
-    g_debugDraw.Create();
     b2Vec2 gravity = b2Vec2(0.0f, -8.0f);
     world = new b2World(gravity);
-    world->SetDebugDraw(&g_debugDraw);
+    if(isb2DebugDraw)
+    {
+        g_debugDraw.Create();
+        world->SetDebugDraw(&g_debugDraw);
+    }
     world->SetContactListener(&myContactListenerInstance);
     
-    player = new B2Player(world, { 300, 100 });
+    player = new B2Player(world, { 270, 60 });
     player->speed = 0;
     player->canJump = false;
     
@@ -140,7 +139,9 @@ void GameB2Mario::OnEnter(){
     char des[1024] = {0};
     tmx_img_load_func = TilemapHelper::ex_tex_loader;
     tmx_img_free_func = TilemapHelper::ex_free_tex;
-    tmx_map *map = tmx_load(Global::ResFullPath(des,"level1.tmx"));
+    tmx_map *map = tmx_load(Global::ResFullPath(des,"mysunnyland.tmx"));
+    goombaNum = 0;
+    turtleNum = 0;
     if (!map) {
         tmx_perror("Cannot load map");
     }else{
@@ -189,9 +190,52 @@ void GameB2Mario::OnEnter(){
                     B2Player::MARIO_BIT;
             
             fdef.shape = &shape;
-            //fdef.density = 1.0f;
             body->CreateFixture(&fdef);
         }
+    }
+    
+    for (int i = 0; i < TilemapHelper::polyLineItems.size(); i++)
+    {
+        MultPointsItem *item = &TilemapHelper::polyLineItems[i];
+        if(item->vertices.size()<3){
+            b2BodyDef bd;
+            b2Body* edge = world->CreateBody(&bd);
+            b2EdgeShape shape;
+            for(int j = 1; j < item->vertices.size();j++ ){
+                auto width = item->vertices[j].x - item->vertices[j-1].x;
+                b2Vec2 v0((item->vertices[j-1].x-width)/PPM, (Global::ScreenHeight-item->vertices[j-1].y)/PPM);
+                b2Vec2 v1( item->vertices[j-1].x/PPM, (Global::ScreenHeight-item->vertices[j-1].y)/PPM);
+                b2Vec2 v2( item->vertices[j].x/PPM, (Global::ScreenHeight-item->vertices[j].y)/PPM);
+                b2Vec2 v3((item->vertices[j].x+width)/PPM, (Global::ScreenHeight-item->vertices[j].y)/PPM);
+                shape.SetOneSided(v0, v1, v2, v3);
+            }
+            b2FixtureDef fdef;
+            fdef.filter.categoryBits = B2Player::OBJECT_BIT;
+            fdef.friction = 1.0f;
+            fdef.density = 0.0f;
+            fdef.shape = &shape;
+            edge->CreateFixture(&fdef);
+        }
+    }
+    
+    for (int i = 0; i < TilemapHelper::polygonItems.size(); i++)
+    {
+        MultPointsItem *item = &TilemapHelper::polygonItems[i];
+        b2BodyDef bd;
+        b2Body* polygon = world->CreateBody(&bd);
+        b2Vec2 vertices[8];
+        int size = (int)item->vertices.size();
+        for(int j = 0; j < size;j++ ){
+            vertices[j].Set(item->vertices[j].x/PPM, (Global::ScreenHeight-item->vertices[j].y)/PPM);
+        }
+        b2PolygonShape shape;
+        shape.Set(vertices, size);
+        b2FixtureDef fdef;
+        fdef.filter.categoryBits = B2Player::OBJECT_BIT;
+        fdef.friction = 1.0f;
+        fdef.density = 0.0f;
+        fdef.shape = &shape;
+        polygon->CreateFixture(&fdef);
     }
     
     glm::mat4 projection2d = glm::ortho(0.0f, static_cast<GLfloat>(this->Width),
@@ -214,30 +258,51 @@ void GameB2Mario::OnExit(){
     
 }
 
+void GameB2Mario::PlayerMoveForward(){
+    b2Body *body = player->body;
+    player->flipX = false;
+    player->isWalk = true;
+    if(body->GetLinearVelocity().x <= 1){
+        body->ApplyLinearImpulse({0.01f,0}, body->GetWorldCenter(), true);
+    }
+}
+
+void GameB2Mario::PlayerMoveBack(){
+    b2Body *body = player->body;
+    player->flipX = true;
+    player->isWalk = true;
+    if (body->GetLinearVelocity().x >= -1){
+        body->ApplyLinearImpulse({-0.01f,0}, body->GetWorldCenter(), true);
+    }
+}
+
+void GameB2Mario::PlayerStopMove(){
+    
+}
+
+void GameB2Mario::PlayerJump(){
+    b2Body *body = player->body;
+    if (player->canJump){
+        body->ApplyLinearImpulse({0,0.07f}, body->GetWorldCenter(), true);
+    }
+}
+
 void GameB2Mario::KeyboardInput(ExKeyCode keyCode, ExKeyAction action)
 {
-    //if(action == ExActionPressed)
+    if(action == ExActionPressed)
     {
-        b2Body *body = player->body;
         switch (keyCode) {
             case ExKeyLeft:
-                player->flipX = true;
-                if (body->GetLinearVelocity().x >= -1){
-                    body->ApplyLinearImpulse({-0.02f,0}, body->GetWorldCenter(), true);
-                }
+                PlayerMoveBack();
                 break;
             case ExKeyRight:
-                player->flipX = false;
-                if(body->GetLinearVelocity().x <= 1){
-                    body->ApplyLinearImpulse({0.02f,0}, body->GetWorldCenter(), true);
-                }
+                PlayerMoveForward();
                 break;
             case ExKeyUp:
-                if (player->canJump){
-                    body->ApplyLinearImpulse({0,0.05f}, body->GetWorldCenter(), true);
-                }
+                PlayerJump();
                 break;
             case ExKeyDown:
+                PlayerStopMove();
                 break;
             default:
                 break;
@@ -250,39 +315,19 @@ void GameB2Mario::Update(GLfloat dt)
     b2Body *body = player->body;
     if(GoButton_Right->mouseState == MOUSE_PRESSED)
     {
-        player->flipX = false;
-        if(body->GetLinearVelocity().x <= 1)
-            body->ApplyLinearImpulse({0.01f,0}, body->GetWorldCenter(), true);
+        PlayerMoveForward();
     }
     else if(GoButton_Left->mouseState == MOUSE_PRESSED)
     {
-        player->flipX = true;
-        if (body->GetLinearVelocity().x >= -1)
-            body->ApplyLinearImpulse({-0.01f,0}, body->GetWorldCenter(), true);
-    }
-    if(JumpButton->mouseState == MOUSE_PRESSED)
-    {
-        if (player->canJump){
-            body->ApplyLinearImpulse({0,0.1f}, body->GetWorldCenter(), true);
-        }
+        PlayerMoveBack();
     }
     
-    if(abs(body->GetLinearVelocity().y) < 0.001f){
-        player->canJump = true;
-        player->isJump = false;
-    }
-    else{
-        player->canJump = false;
-        player->isJump = true;
-    }
-    
-    if (abs(body->GetLinearVelocity().x) < 0.001f){
+    if (abs(body->GetLinearVelocity().x) < 0.05f){
         player->isWalk = false;
     }
     else{
         player->isWalk = true;
     }
-    
     //player->Update(&TilemapHelper::gameItems[0], (int)TilemapHelper::gameItems.size());
     player->Update();
     
@@ -364,14 +409,20 @@ void GameB2Mario::Render()
     camera_b2.rotation = camera.rotation;
     camera_b2.zoom = camera.zoom;
     
-    uint32 flags = 0;
-    flags += b2Draw::e_shapeBit;
-    flags += b2Draw::e_jointBit;
-    g_debugDraw.SetFlags(flags);
-    world->DebugDraw();
-    g_debugDraw.Flush(GetCameraMatrix2D(camera_b2));
-    
-    //g_debugDraw.Flush(glm::mat4(1.0f));
+    if(isb2DebugDraw)
+    {
+        uint32 flags = 0;
+        flags += b2Draw::e_shapeBit;
+        flags += b2Draw::e_jointBit;
+        g_debugDraw.SetFlags(flags);
+        world->DebugDraw();
+        g_debugDraw.Flush(GetCameraMatrix2D(camera_b2));
+        
+        //g_debugDraw.Flush(glm::mat4(1.0f));
+    }
+    int d_fps = (int)this->fps;
+    std::stringstream ss; ss << d_fps;
+    Text->RenderText("fps:"+ss.str(), 200.0f, 10.0f, 0.75f, glm::vec3(1.0f,1.0f,1.0f));
 }
 
 void GameB2Mario::Release()
@@ -401,13 +452,13 @@ void GameB2Mario::UpdateCameraCenterInsideMap()
         camera.offset.x = (width - (max.x - width/2))/ZOOM;
     }
     if (max.y < height){
-        camera.offset.y = (height - (max.y - height/2))/ZOOM;
+        //camera.offset.y = (height - (max.y - height/2))/ZOOM;
     }
     if (min.x > 0) {
         camera.offset.x = (width/2 - min.x)/ZOOM;
     }
     if (min.y > 0) {
-        camera.offset.y = (height/2 - min.y)/ZOOM;
+        //camera.offset.y = (height/2 - min.y)/ZOOM;
     }
 }
 

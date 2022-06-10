@@ -205,6 +205,10 @@ void GameMario::Render()
     GoButton_Left->Draw(*uiRenderer);
     GoButton_Right->Draw(*uiRenderer);
     JumpButton->Draw(*uiRenderer);
+    
+    int d_fps = (int)this->fps;
+    std::stringstream ss; ss << d_fps;
+    Text->RenderText("fps:"+ss.str(), 200.0f, 10.0f, 0.75f, glm::vec3(1.0f,1.0f,1.0f));
 }
 
 void GameMario::Release()

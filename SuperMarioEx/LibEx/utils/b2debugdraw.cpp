@@ -33,104 +33,6 @@
 #define GL_PROGRAM_POINT_SIZE 0x8642
 
 DebugDraw g_debugDraw;
-Camera g_camera;
-
-//
-Camera::Camera()
-{
-	m_width = 1280;
-	m_height = 800;
-	ResetView();
-}
-
-void Camera::SetView(float x,float y,int32 width,int32 height,float zoom){
-    m_width = width;
-    m_height = height;
-    m_center.Set(x,y);
-    m_zoom = zoom;
-}
-
-//
-void Camera::ResetView()
-{
-	m_center.Set(0.0f, 0.0f);
-	m_zoom = 1.0f;
-}
-
-//
-b2Vec2 Camera::ConvertScreenToWorld(const b2Vec2& ps)
-{
-	float w = float(m_width);
-	float h = float(m_height);
-	float u = ps.x / w;
-	float v = (h - ps.y) / h;
-    
-	b2Vec2 extents(w/PPM, h/PPM);
-	extents *= m_zoom;
-
-	b2Vec2 lower = m_center - extents;
-	b2Vec2 upper = m_center + extents;
-
-	b2Vec2 pw;
-	pw.x = (1.0f - u) * lower.x + u * upper.x;
-	pw.y = (1.0f - v) * lower.y + v * upper.y;
-	return pw;
-}
-
-//
-b2Vec2 Camera::ConvertWorldToScreen(const b2Vec2& pw)
-{
-	float w = float(m_width);
-	float h = float(m_height);
-    
-	b2Vec2 extents(w/PPM, h/PPM);
-	extents *= m_zoom;
-
-	b2Vec2 lower = m_center - extents;
-	b2Vec2 upper = m_center + extents;
-
-	float u = (pw.x - lower.x) / (upper.x - lower.x);
-	float v = (pw.y - lower.y) / (upper.y - lower.y);
-
-	b2Vec2 ps;
-	ps.x = u * w;
-	ps.y = (1.0f - v) * h;
-	return ps;
-}
-
-// Convert from world coordinates to normalized device coordinates.
-// http://www.songho.ca/opengl/gl_projectionmatrix.html
-void Camera::BuildProjectionMatrix(float* m, float zBias)
-{
-	float w = float(m_width);
-	float h = float(m_height);
-    
-	b2Vec2 extents(w/PPM, h/PPM);
-	extents *= m_zoom;
-
-	b2Vec2 lower = m_center - extents;
-	b2Vec2 upper = m_center + extents;
-
-	m[0] = 2.0f / (upper.x - lower.x);
-	m[1] = 0.0f;
-	m[2] = 0.0f;
-	m[3] = 0.0f;
-
-	m[4] = 0.0f;
-	m[5] = 2.0f / (upper.y - lower.y);
-	m[6] = 0.0f;
-	m[7] = 0.0f;
-
-	m[8] = 0.0f;
-	m[9] = 0.0f;
-	m[10] = 1.0f;
-	m[11] = 0.0f;
-
-	m[12] = -(upper.x + lower.x) / (upper.x - lower.x);
-	m[13] = -(upper.y + lower.y) / (upper.y - lower.y);
-	m[14] = zBias;
-	m[15] = 1.0f;
-}
 
 //
 static void sCheckGLError()
@@ -223,8 +125,8 @@ struct GLRenderPoints
         m_view = viewMatrix;
 		glUseProgram(m_programId);
 
-		float proj[16] = { 0.0f };
-		g_camera.BuildProjectionMatrix(proj, 0.0f);
+		//float proj[16] = { 0.0f };
+		//g_camera.BuildProjectionMatrix(proj, 0.0f);
         
         int w = Global::ScreenWidth;
         int h = Global::ScreenHeight;
@@ -232,7 +134,7 @@ struct GLRenderPoints
                                             0.0f, static_cast<GLfloat>(h/PPM),
                                                 -1.0f, 1.0f);
 
-		glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
+		glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(m_viewUniform, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
 		glBindVertexArray(m_vaoId);
@@ -351,8 +253,8 @@ struct GLRenderLines
         m_view = viewMatrix;
 		glUseProgram(m_programId);
 
-		float proj[16] = { 0.0f };
-		g_camera.BuildProjectionMatrix(proj, 0.1f);
+		//float proj[16] = { 0.0f };
+		//g_camera.BuildProjectionMatrix(proj, 0.1f);
         
         int w = Global::ScreenWidth;
         int h = Global::ScreenHeight;
@@ -472,8 +374,8 @@ struct GLRenderTriangles
         m_view = viewMatrix;
 		glUseProgram(m_programId);
 
-		float proj[16] = { 0.0f };
-		g_camera.BuildProjectionMatrix(proj, 0.2f);
+		//float proj[16] = { 0.0f };
+		//g_camera.BuildProjectionMatrix(proj, 0.2f);
         
         int w = Global::ScreenWidth;
         int h = Global::ScreenHeight;
@@ -719,15 +621,15 @@ void DebugDraw::DrawString(int x, int y, const char* string, ...)
 //
 void DebugDraw::DrawString(const b2Vec2& pw, const char* string, ...)
 {
-	b2Vec2 ps = g_camera.ConvertWorldToScreen(pw);
-
-	va_list arg;
-	va_start(arg, string);
-	ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
-	ImGui::SetCursorPos(ImVec2(ps.x, ps.y));
-	ImGui::TextColoredV(ImColor(230, 153, 153, 255), string, arg);
-	ImGui::End();
-	va_end(arg);
+//	b2Vec2 ps = g_camera.ConvertWorldToScreen(pw);
+//
+//	va_list arg;
+//	va_start(arg, string);
+//	ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
+//	ImGui::SetCursorPos(ImVec2(ps.x, ps.y));
+//	ImGui::TextColoredV(ImColor(230, 153, 153, 255), string, arg);
+//	ImGui::End();
+//	va_end(arg);
 }
 
 //

@@ -34,7 +34,6 @@ struct b2AABB;
 struct GLRenderPoints;
 struct GLRenderLines;
 struct GLRenderTriangles;
-struct GLFWwindow;
 
 //
 struct Camera
@@ -93,7 +92,5 @@ public:
 };
 
 extern DebugDraw g_debugDraw;
-extern Camera g_camera;
-extern GLFWwindow* g_mainWindow;
 
 #endif

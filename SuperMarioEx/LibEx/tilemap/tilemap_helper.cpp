@@ -10,8 +10,11 @@
 std::vector<Tile*> TilemapHelper::tiles;
 std::vector<MapLayer*> TilemapHelper::mapLayers;
 std::vector<EnvItem> TilemapHelper::gameItems;
+std::vector<MultPointsItem> TilemapHelper::polyLineItems;
+std::vector<MultPointsItem> TilemapHelper::polygonItems;
 
 void* TilemapHelper::ex_tex_loader(const char *path) {
+    //printf("tile map tex path %s \n",path);
     Texture2D *texture = new Texture2D();
     texture->Internal_Format = GL_RGBA;
     texture->Image_Format = GL_RGBA;
@@ -60,12 +63,26 @@ void TilemapHelper::get_tilemap_objects(const char *name, tmx_object_group *objg
                 gameItems.push_back(item);
             }
             else if (head->obj_type  == OT_POLYGON) {
-                //draw_polygon(head->content.shape->points, head->x, head->y, head->content.shape->points_len);
-                printf("object OT_POLYGON\n");
+                printf("object OT_POLYGON,len %d\n",head->content.shape->points_len);
+                MultPointsItem pItem;
+                int i;
+                for (i=0; i<head->content.shape->points_len; i++) {
+                    auto px = head->x+head->content.shape->points[i][0];
+                    auto py = head->y+head->content.shape->points[i][1];
+                    pItem.vertices.push_back({px,py});
+                }
+                polygonItems.push_back(pItem);
             }
             else if (head->obj_type == OT_POLYLINE) {
-                //draw_polyline(head->content.shape->points, head->x, head->y, head->content.shape->points_len);
-                printf("object OT_POLYLINE\n");
+                printf("object OT_POLYLINE, points len %d \n",head->content.shape->points_len);
+                MultPointsItem plItem;
+                int i;
+                for (i=0; i<head->content.shape->points_len; i++) {
+                    auto px = head->x+head->content.shape->points[i][0];
+                    auto py = head->y+head->content.shape->points[i][1];
+                    plItem.vertices.push_back({px,py});
+                }
+                polyLineItems.push_back(plItem);
             }
             else if (head->obj_type == OT_ELLIPSE) {
                 printf("object OT_ELLIPSE\n");

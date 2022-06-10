@@ -55,7 +55,7 @@ void GameTilemap::OnEnter(){
     char des[1024] = {0};
     tmx_img_load_func = TilemapHelper::ex_tex_loader;
     tmx_img_free_func = TilemapHelper::ex_free_tex;
-    tmx_map *map = tmx_load(Global::ResFullPath(des,"level1.tmx"));
+    tmx_map *map = tmx_load(Global::ResFullPath(des,"sunnyland_level1.tmx"));
     if (!map) {
         tmx_perror("Cannot load map");
     }else{
@@ -121,6 +121,9 @@ void GameTilemap::Render()
 //        Renderer->DrawTile(*tiles[i]);
 //    }
     
+    int d_fps = (int)this->fps;
+    std::stringstream ss; ss << d_fps;
+    Text->RenderText("fps:"+ss.str(), 200.0f, 10.0f, 0.75f, glm::vec3(1.0f,1.0f,1.0f));
 }
 
 void GameTilemap::Release()

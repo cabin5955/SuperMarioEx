@@ -128,7 +128,7 @@ void GameB2Platformer::Init(unsigned int width, unsigned int height)
                             ResourceManager::GetTexture("arrow"),
                             Jump_platformer,0);
     
-    player.position = { width/2.0f, 500.0f };
+    player.position = { (width-200)/2.0f, 500.0f };
     player.size = {40, 40};
     player.speed = 0;
     player.canJump = true;
@@ -149,20 +149,54 @@ void GameB2Platformer::Init(unsigned int width, unsigned int height)
     playerBodyDef.position.Set(player.position.x/PPM,player.position.y/PPM);
     playerBodyDef.userData.pointer = reinterpret_cast<uintptr_t>(&player);;
     body = world->CreateBody(&playerBodyDef);
+    body->SetFixedRotation(true);
     
     b2PolygonShape playerShape;
     playerShape.SetAsBox(player.size.x/2.0f/PPM, player.size.y/2.0f/PPM);
     body->CreateFixture(&playerShape, 1.0f);
     
+    b2CircleShape circleShape;
+    circleShape.m_radius = player.size.x/2.0f/PPM;
+    
+    b2FixtureDef fixtureDef;
+    fixtureDef.density = 1;
+    fixtureDef.friction = 0.8f;
+    fixtureDef.shape = &circleShape;
+    
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position.Set( player.position.x/PPM,player.position.y/PPM);
+    wheel = world->CreateBody( &bodyDef );
+    wheel->CreateFixture(&fixtureDef);
+    
+    b2RevoluteJointDef revoluteJointDef;
+    revoluteJointDef.bodyA = body;
+    revoluteJointDef.bodyB = wheel;
+    revoluteJointDef.collideConnected = false;
+    revoluteJointDef.localAnchorA.Set(0,-player.size.y/2.0f/PPM);//the top right corner of the box
+    revoluteJointDef.localAnchorB.Set(0,0);//center of the circle
+    revoluteJointDef.enableMotor = true;
+    revoluteJointDef.maxMotorTorque = 10;
+    revoluteJointDef.motorSpeed = 0;
+    joint = (b2RevoluteJoint*)world->CreateJoint( &revoluteJointDef );
+  
     // Platform
     {
         b2BodyDef bd;
-        bd.position.Set(this->Width/2.0/PPM, 300.0f/PPM);
+        bd.type = b2_dynamicBody;
+        
+        bd.position.Set(this->Width/2.0/PPM, 400.0f/PPM);
         b2Body* body = world->CreateBody(&bd);
+        
+        bd.position.Set((this->Width/2.0+100)/PPM, 300.0f/PPM);
+        b2Body* body2 = world->CreateBody(&bd);
 
         b2PolygonShape shape;
-        shape.SetAsBox(100.0f/PPM, 25.0f/PPM);
-        body->CreateFixture(&shape, 0.0f);
+        shape.SetAsBox(300.0f/PPM, 2.0f/PPM);
+        body->CreateFixture(&shape, 1.0f);
+        
+        shape.SetAsBox(20.0f/PPM, 40.0f/PPM);
+        body2->CreateFixture(&shape, 1.0f);
     }
  
     b2BodyDef groundBodyDef;
@@ -202,13 +236,20 @@ void GameB2Platformer::Update(GLfloat dt)
 {
     if(GoButton_Right->mouseState == MOUSE_PRESSED)
     {
-        if(body->GetLinearVelocity().x <= 2)
-            body->ApplyLinearImpulse({0.1f,0}, body->GetWorldCenter(), true);
+//        if(body->GetLinearVelocity().x <= 2)
+//            body->ApplyLinearImpulse({0.1f,0}, body->GetWorldCenter(), true);
+            
+        joint->SetMotorSpeed(-360 * DEG2RAD);
     }
     else if(GoButton_Left->mouseState == MOUSE_PRESSED)
     {
-        if (body->GetLinearVelocity().x >= -2)
-            body->ApplyLinearImpulse({-0.1f,0}, body->GetWorldCenter(), true);
+//        if (body->GetLinearVelocity().x >= -2)
+//            body->ApplyLinearImpulse({-0.1f,0}, body->GetWorldCenter(), true);
+        
+        joint->SetMotorSpeed(360 * DEG2RAD);
+    }
+    else{
+        joint->SetMotorSpeed(0);
     }
     
     if(JumpButton->mouseState == MOUSE_PRESSED)
@@ -216,7 +257,7 @@ void GameB2Platformer::Update(GLfloat dt)
         if (player.canJump)
         {
             player.canJump = false;
-            body->ApplyLinearImpulse({0,0.8f}, body->GetWorldCenter(), true);
+            body->ApplyLinearImpulse({0,1.2f}, body->GetWorldCenter(), true);
         }
     }
     

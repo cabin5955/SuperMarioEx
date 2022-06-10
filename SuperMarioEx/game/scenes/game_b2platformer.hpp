@@ -69,6 +69,8 @@ private:
     GLfloat deltaTime;
     b2World* world;
     b2Body* body;
+    b2Body* wheel;
+    b2RevoluteJoint* joint;
     SpriteRenderer      *spriteRenderer;
     SpriteRenderer      *uiRenderer;
     ColorRenderer       *colorRenderer;

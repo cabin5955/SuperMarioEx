@@ -17,6 +17,7 @@
 #include "game_mario.hpp"
 #include "game_b2mario.hpp"
 #include "game_tilemap.hpp"
+#include "game_b2unicycle_mario.hpp"
 
 @interface GameWrapper (){
     NSString *preferPath;
@@ -107,7 +108,8 @@ void CommonInit(){
     GameB2Platformer::GetInstance()->Init(width, height);
     GameB2Mario::GetInstance()->Init(width, height);
     GameTilemap::GetInstance()->Init(width, height);
-    Director::GetInstance()->SetRootScene(GameB2Mario::GetInstance());
+    GameB2UnicycleMario::GetInstance()->Init(width, height);
+    Director::GetInstance()->SetRootScene(GameB2Platformer::GetInstance());
     
     Shader colorShader = ResourceManager::GetShader("color");
     gw_colorRenderer = new ColorRenderer(colorShader);
@@ -148,6 +150,7 @@ void CommonInit(){
     std::vector<IScene*> scenes = Director::GetInstance()->GetAllScenes();
     for(int i = 0; i < scenes.size();i++)
     {
+        scenes[i]->fps = 1.0f/dt;
         scenes[i]->Update(dt);
     }
 }

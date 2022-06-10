@@ -119,3 +119,10 @@ void Player::Draw(SpriteRenderer &renderer)
     renderer.DrawSprite(this->Sprite, pos, this->Size, this->RotationAxis, this->RotationAngle, this->color);
     renderer.SetFlipX(false);
 }
+
+void Player::Draw(SpriteRenderer &renderer, glm::vec2 &pos)
+{
+    renderer.SetFlipX(this->flipX);
+    renderer.DrawSprite(this->Sprite, pos, this->Size, this->RotationAxis, this->RotationAngle, this->color);
+    renderer.SetFlipX(false);
+}
