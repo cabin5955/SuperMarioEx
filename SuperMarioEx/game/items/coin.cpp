@@ -9,7 +9,7 @@
 
 Coin::Coin(b2World *world, tmx_map *map, EnvItem *item):InteractiveTileObject(world, map, item){
     this->fixture->GetUserData().pointer = (uintptr_t)this;
-    setCategoryFilter(B2Player::COIN_BIT);
+    setCategoryFilter(Player::COIN_BIT);
 }
 
 void Coin::onHeadHit(B2Player &player){

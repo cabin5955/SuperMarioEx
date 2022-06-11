@@ -7,6 +7,7 @@
 
 #include "game_b2mario.hpp"
 #include "world_contact_listener.hpp"
+#include "map2body_builder.hpp"
 
 #define PLAYER_HOR_SPD 200.0f
 float ZOOM = 2.0f;
@@ -122,7 +123,7 @@ void GameB2Mario::Init(unsigned int width, unsigned int height)
         b2PolygonShape shape;
         shape.SetAsBox(4000.0f/PPM, 10.0f/PPM);
         b2FixtureDef fdef;
-        fdef.filter.categoryBits = B2Player::PLATFORM_BIT;
+        fdef.filter.categoryBits = Player::PLATFORM_BIT;
         fdef.shape = &shape;
         body->CreateFixture(&fdef);
     }
@@ -139,7 +140,7 @@ void GameB2Mario::OnEnter(){
     char des[1024] = {0};
     tmx_img_load_func = TilemapHelper::ex_tex_loader;
     tmx_img_free_func = TilemapHelper::ex_free_tex;
-    tmx_map *map = tmx_load(Global::ResFullPath(des,"mysunnyland.tmx"));
+    tmx_map *map = tmx_load(Global::ResFullPath(des,"mario_level1.tmx"));//"mysunnyland.tmx"));
     goombaNum = 0;
     turtleNum = 0;
     if (!map) {
@@ -168,75 +169,12 @@ void GameB2Mario::OnEnter(){
             turtleNum++;
         }
         else{
-            glm::vec2 pos = {item->position.x,item->position.y};
-            glm::vec2 size = {item->size.x,item->size.y};
-            b2BodyDef bd;
-            int map_y = map->height-(pos.y+size.y)/map->tile_height;
-            int py = map_y * map->tile_height + size.y/2.0f;
-            float base = this->Height - (map->height)*map->tile_height;
-            bd.position.Set((pos.x+size.x/2.0f)/PPM, (py+base)/PPM);
-            b2Body* body = world->CreateBody(&bd);
-
-            b2PolygonShape shape;
-            shape.SetAsBox(size.x/2.0f/PPM, size.y/2.0f/PPM);
-            
-            b2FixtureDef fdef;
-            fdef.filter.categoryBits = B2Player::OBJECT_BIT;
-            fdef.filter.maskBits = B2Player::GROUND_BIT |
-                    B2Player::COIN_BIT |
-                    B2Player::BRICK_BIT |
-                    B2Player::ENEMY_BIT |
-                    B2Player::OBJECT_BIT |
-                    B2Player::MARIO_BIT;
-            
-            fdef.shape = &shape;
-            body->CreateFixture(&fdef);
+            Map2BodyBuilder::BuildEnvItemObject(map, this->world, item);
         }
     }
     
-    for (int i = 0; i < TilemapHelper::polyLineItems.size(); i++)
-    {
-        MultPointsItem *item = &TilemapHelper::polyLineItems[i];
-        if(item->vertices.size()<3){
-            b2BodyDef bd;
-            b2Body* edge = world->CreateBody(&bd);
-            b2EdgeShape shape;
-            for(int j = 1; j < item->vertices.size();j++ ){
-                auto width = item->vertices[j].x - item->vertices[j-1].x;
-                b2Vec2 v0((item->vertices[j-1].x-width)/PPM, (Global::ScreenHeight-item->vertices[j-1].y)/PPM);
-                b2Vec2 v1( item->vertices[j-1].x/PPM, (Global::ScreenHeight-item->vertices[j-1].y)/PPM);
-                b2Vec2 v2( item->vertices[j].x/PPM, (Global::ScreenHeight-item->vertices[j].y)/PPM);
-                b2Vec2 v3((item->vertices[j].x+width)/PPM, (Global::ScreenHeight-item->vertices[j].y)/PPM);
-                shape.SetOneSided(v0, v1, v2, v3);
-            }
-            b2FixtureDef fdef;
-            fdef.filter.categoryBits = B2Player::OBJECT_BIT;
-            fdef.friction = 1.0f;
-            fdef.density = 0.0f;
-            fdef.shape = &shape;
-            edge->CreateFixture(&fdef);
-        }
-    }
-    
-    for (int i = 0; i < TilemapHelper::polygonItems.size(); i++)
-    {
-        MultPointsItem *item = &TilemapHelper::polygonItems[i];
-        b2BodyDef bd;
-        b2Body* polygon = world->CreateBody(&bd);
-        b2Vec2 vertices[8];
-        int size = (int)item->vertices.size();
-        for(int j = 0; j < size;j++ ){
-            vertices[j].Set(item->vertices[j].x/PPM, (Global::ScreenHeight-item->vertices[j].y)/PPM);
-        }
-        b2PolygonShape shape;
-        shape.Set(vertices, size);
-        b2FixtureDef fdef;
-        fdef.filter.categoryBits = B2Player::OBJECT_BIT;
-        fdef.friction = 1.0f;
-        fdef.density = 0.0f;
-        fdef.shape = &shape;
-        polygon->CreateFixture(&fdef);
-    }
+    Map2BodyBuilder::BuildAllPolylineObjects(this->world);
+    Map2BodyBuilder::BuildAllPolygonObjects(this->world);
     
     glm::mat4 projection2d = glm::ortho(0.0f, static_cast<GLfloat>(this->Width),
         static_cast<GLfloat>(this->Height), 0.0f, -1.0f, 1.0f);

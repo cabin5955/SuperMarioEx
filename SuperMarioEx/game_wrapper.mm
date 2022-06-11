@@ -109,7 +109,7 @@ void CommonInit(){
     GameB2Mario::GetInstance()->Init(width, height);
     GameTilemap::GetInstance()->Init(width, height);
     GameB2UnicycleMario::GetInstance()->Init(width, height);
-    Director::GetInstance()->SetRootScene(GameB2Platformer::GetInstance());
+    Director::GetInstance()->SetRootScene(GameB2UnicycleMario::GetInstance());
     
     Shader colorShader = ResourceManager::GetShader("color");
     gw_colorRenderer = new ColorRenderer(colorShader);

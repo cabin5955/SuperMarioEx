@@ -32,12 +32,14 @@ B2Player::B2Player(b2World *world, glm::vec2 pos) : Player(pos){
     b2CircleShape shape;
     shape.m_radius = 8 / PPM;
     shape.m_p = {0.0f,-2 / PPM};
+//    b2PolygonShape shape;
+//    shape.SetAsBox(8/PPM, 8/PPM , {0,0}, 0 );
     fdef.shape = &shape;
     fdef.density = 1.0f;
     this->body->CreateFixture(&fdef)->GetUserData().pointer = (uintptr_t)this;
     
     b2PolygonShape head;
-    head.SetAsBox(8/2.0f/PPM, 2/2.0f/PPM , {0,10 / PPM}, 0 );
+    head.SetAsBox(8/2.0f/PPM, 2/2.0f/PPM , {0, 8/PPM}, 0 );
     fdef.filter.categoryBits = Player::MARIO_HEAD_BIT;
     fdef.shape = &head;
     fdef.isSensor = true;

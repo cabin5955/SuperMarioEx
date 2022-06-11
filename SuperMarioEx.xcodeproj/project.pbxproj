@@ -12,6 +12,7 @@
 		D251CFE2284A561500D78C89 /* tmx_loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251CFE1284A561500D78C89 /* tmx_loader.cpp */; };
 		D251CFE62852DAC100D78C89 /* b2unicycle_player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251CFE42852DAC100D78C89 /* b2unicycle_player.cpp */; };
 		D251CFF12852DFB400D78C89 /* game_b2unicycle_mario.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251CFEF2852DFB400D78C89 /* game_b2unicycle_mario.cpp */; };
+		D251CFF6285384D500D78C89 /* map2body_builder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251CFF4285384D500D78C89 /* map2body_builder.cpp */; };
 		D284259F27EEBD9C00DEB423 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D284259E27EEBD9C00DEB423 /* Assets.xcassets */; };
 		D28425A227EEBD9C00DEB423 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D28425A127EEBD9C00DEB423 /* main.m */; };
 		D284269027EF07CE00DEB423 /* CDOpenALSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = D28425B027EF07CC00DEB423 /* CDOpenALSupport.m */; };
@@ -245,6 +246,8 @@
 		D251CFE52852DAC100D78C89 /* b2unicycle_player.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = b2unicycle_player.hpp; sourceTree = "<group>"; };
 		D251CFEF2852DFB400D78C89 /* game_b2unicycle_mario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = game_b2unicycle_mario.cpp; sourceTree = "<group>"; };
 		D251CFF02852DFB400D78C89 /* game_b2unicycle_mario.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = game_b2unicycle_mario.hpp; sourceTree = "<group>"; };
+		D251CFF4285384D500D78C89 /* map2body_builder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = map2body_builder.cpp; sourceTree = "<group>"; };
+		D251CFF5285384D500D78C89 /* map2body_builder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = map2body_builder.hpp; sourceTree = "<group>"; };
 		D284258B27EEBD9A00DEB423 /* SuperMarioEx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperMarioEx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D284259E27EEBD9C00DEB423 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D28425A027EEBD9C00DEB423 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1310,6 +1313,8 @@
 				D2BA2A32281FB65B00314DB1 /* interactive_tileobject.hpp */,
 				D2BA2A432820BDF500314DB1 /* world_contact_listener.cpp */,
 				D2BA2A442820BDF500314DB1 /* world_contact_listener.hpp */,
+				D251CFF4285384D500D78C89 /* map2body_builder.cpp */,
+				D251CFF5285384D500D78C89 /* map2body_builder.hpp */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -1581,6 +1586,7 @@
 				D28426B027EF07CE00DEB423 /* touch_area.cpp in Sources */,
 				D284287728006F6E00DEB423 /* b2_gear_joint.cpp in Sources */,
 				D2842A762805C02A00DEB423 /* tilemap_helper.cpp in Sources */,
+				D251CFF6285384D500D78C89 /* map2body_builder.cpp in Sources */,
 				D284269C27EF07CE00DEB423 /* scene.cpp in Sources */,
 				D284286F28006F6E00DEB423 /* b2_world_callbacks.cpp in Sources */,
 				D284286B28006F6E00DEB423 /* b2_body.cpp in Sources */,

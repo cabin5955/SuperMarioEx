@@ -28,14 +28,14 @@ void Oposum::DefineEnemy(){
     this->body->SetFixedRotation(true);
 
     b2FixtureDef fdef;
-    fdef.filter.categoryBits = B2Player::ENEMY_BIT;
-    fdef.filter.maskBits = B2Player::GROUND_BIT |
-            B2Player::COIN_BIT |
-            B2Player::BRICK_BIT |
-            B2Player::ENEMY_BIT |
-            B2Player::OBJECT_BIT |
-            B2Player::MARIO_BIT|
-            B2Player::PLATFORM_BIT;
+    fdef.filter.categoryBits = Player::ENEMY_BIT;
+    fdef.filter.maskBits = Player::GROUND_BIT |
+            Player::COIN_BIT |
+            Player::BRICK_BIT |
+            Player::ENEMY_BIT |
+            Player::OBJECT_BIT |
+            Player::MARIO_BIT|
+            Player::PLATFORM_BIT;
     
     b2PolygonShape shape;
     shape.SetAsBox(24/2.0f/PPM, 12/2.0f/PPM);
@@ -46,7 +46,7 @@ void Oposum::DefineEnemy(){
 
     b2PolygonShape head;
     head.SetAsBox(20/2.0f/PPM, 2/2.0f/PPM , {0,6 / PPM}, 0 );
-    fdef.filter.categoryBits = B2Player::ENEMY_HEAD_BIT;
+    fdef.filter.categoryBits = Player::ENEMY_HEAD_BIT;
     fdef.shape = &head;
     fdef.isSensor = true;
     this->body->CreateFixture(&fdef)->GetUserData().pointer = (uintptr_t)this;

@@ -9,12 +9,12 @@
 
 Brick::Brick(b2World *world, tmx_map *map, EnvItem *item):InteractiveTileObject(world, map, item){
     this->fixture->GetUserData().pointer = (uintptr_t)this;
-    setCategoryFilter(B2Player::BRICK_BIT);
+    setCategoryFilter(Player::BRICK_BIT);
 }
 
 void Brick::onHeadHit(B2Player &player){
     printf("on head hit brick!\n");
-    setCategoryFilter(B2Player::DESTROYED_BIT);
+    setCategoryFilter(Player::DESTROYED_BIT);
     MapLayer::Cell &cell = getCell();
     int layer = cell.layerIndex;
     cell.tile = NULL;
