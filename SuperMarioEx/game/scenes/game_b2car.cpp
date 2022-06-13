@@ -1,43 +1,40 @@
 //
-//  game_b2unicycle_mario.cpp
+//  game_b2car.cpp
 //  SuperMarioEx
 //
-//  Created by chen caibin on 2022/6/10.
+//  Created by chen caibin on 2022/6/11.
 //
 
-#include "game_b2unicycle_mario.hpp"
+#include "game_b2car.hpp"
 #include "world_contact_listener.hpp"
 #include "map2body_builder.hpp"
-#include "debugdrawex.hpp"
 
 #define PLAYER_HOR_SPD 200.0f
 
-bool isb2DebugDraw_unicycle = false;
-GameB2UnicycleMario* GameB2UnicycleMario::s_instance = nullptr;
+bool isb2DebugDraw_car = true;
+GameB2Car* GameB2Car::s_instance = nullptr;
 
-WorldContactListener unicycleMarioContactListener;
-
-void GoLeft_b2unicycle_mario()
+void GoLeft_b2car()
 {
-    GameB2UnicycleMario::GetInstance()->PlayerMoveBack();
+    GameB2Car::GetInstance()->PlayerMoveBack();
 }
 
-void GoRight_b2unicycle_mario()
+void GoRight_b2car()
 {
-    GameB2UnicycleMario::GetInstance()->PlayerMoveForward();
+    GameB2Car::GetInstance()->PlayerMoveForward();
 }
 
-void Jump_b2unicycle_mario()
+void Jump_b2car()
 {
-    GameB2UnicycleMario::GetInstance()->PlayerJump();
+    GameB2Car::GetInstance()->PlayerJump();
 }
 
-void StopMove_b2unicycle_mario()
+void StopMove_b2car()
 {
-    GameB2UnicycleMario::GetInstance()->PlayerStopMove();
+    GameB2Car::GetInstance()->PlayerStopMove();
 }
 
-void GameB2UnicycleMario::Init(unsigned int width, unsigned int height)
+void GameB2Car::Init(unsigned int width, unsigned int height)
 {
     this->Width = width;
     this->Height = height;
@@ -80,33 +77,30 @@ void GameB2UnicycleMario::Init(unsigned int width, unsigned int height)
                                 glm::vec2(btn_size*scal,btn_size*scal),
                                 0,
                                 ResourceManager::GetTexture("arrow"),
-                                GoRight_b2unicycle_mario,StopMove_b2unicycle_mario);
+                                GoRight_b2car,StopMove_b2car);
     
     GoButton_Left = new Button(this,glm::vec2(this->Width/2-btn_size*scal-btn_size*4,this->Height-128*scal),
                                glm::vec2(btn_size*scal,btn_size*scal),
                                180.0f*DEG2RAD,
                                ResourceManager::GetTexture("arrow"),
-                               GoLeft_b2unicycle_mario,StopMove_b2unicycle_mario);
+                               GoLeft_b2car,StopMove_b2car);
     
     JumpButton = new Button(this,glm::vec2(this->Width-btn_size*4,this->Height-128*scal),
                             glm::vec2(btn_size*scal,btn_size*scal),
                             -90.0f*DEG2RAD,
                             ResourceManager::GetTexture("arrow"),
-                            Jump_b2unicycle_mario,0);
+                            Jump_b2car,0);
     
     b2Vec2 gravity = b2Vec2(0.0f, -8.0f);
     world = new b2World(gravity);
-    if(isb2DebugDraw_unicycle)
+    if(isb2DebugDraw_car)
     {
         g_debugDraw.Create();
         world->SetDebugDraw(&g_debugDraw);
     }
-    else{
-        g_DebugDrawEx.Create();
-    }
-    world->SetContactListener(&unicycleMarioContactListener);
+    //world->SetContactListener(&myContactListenerInstance);
     
-    player = new B2UnicyclePlayer(world, { 270, 60 });
+    player = new B2Car(world, { 270, 60 });
     player->speed = 0;
     player->canJump = false;
     
@@ -131,21 +125,19 @@ void GameB2UnicycleMario::Init(unsigned int width, unsigned int height)
         body->CreateFixture(&fdef);
     }
     
-    ZOOM = 2.0f;
     camera.target = {player->Position.x*ZOOM,player->Position.y*ZOOM};
     camera.rotation = 0.0f;
     camera.offset = { width/(2.0f*ZOOM), height/(2.0f*ZOOM)};
     camera.zoom = ZOOM;
+
 }
 
-void GameB2UnicycleMario::OnEnter(){
+void GameB2Car::OnEnter(){
     
     char des[1024] = {0};
     tmx_img_load_func = TilemapHelper::ex_tex_loader;
     tmx_img_free_func = TilemapHelper::ex_free_tex;
-    tmx_map *map = tmx_load(Global::ResFullPath(des,"mysunnyland.tmx"));//"level1.tmx"));//"mysunnyland.tmx"));
-    goombaNum = 0;
-    turtleNum = 0;
+    tmx_map *map = tmx_load(Global::ResFullPath(des,"mysunnyland.tmx"));
     if (!map) {
         tmx_perror("Cannot load map");
     }else{
@@ -155,25 +147,7 @@ void GameB2UnicycleMario::OnEnter(){
     for (int i = 0; i < TilemapHelper::gameItems.size(); i++)
     {
         EnvItem *item = &TilemapHelper::gameItems[i];
-        if(strcmp(item->name,"Bricks")==0){
-            this->brickList.push_back(new Brick(this->world, map, item));
-        }
-        else if(strcmp(item->name,"Coins")==0){
-            this->coinList.push_back(new Coin(this->world, map, item));
-        }
-        else if(strcmp(item->name,"Goombas")==0){
-            glm::vec2 pos = {item->position.x,item->position.y};
-            goombas[goombaNum] = new Goomba(world, pos);
-            goombaNum++;
-        }
-        else if(strcmp(item->name,"Turtles")==0){
-            glm::vec2 pos = {item->position.x,item->position.y};
-            turtles[turtleNum] = new Turtle(world, pos);
-            turtleNum++;
-        }
-        else{
-            Map2BodyBuilder::BuildEnvItemObject(map, this->world, item);
-        }
+        Map2BodyBuilder::BuildEnvItemObject(map, this->world, item);
     }
     
     Map2BodyBuilder::BuildAllPolylineObjects(this->world);
@@ -195,37 +169,29 @@ void GameB2UnicycleMario::OnEnter(){
     uiShader.setMat4("projection", projection2d);
 }
 
-void GameB2UnicycleMario::OnExit(){
+void GameB2Car::OnExit(){
     
 }
 
-void GameB2UnicycleMario::PlayerMoveForward(){
-    player->flipX = false;
+void GameB2Car::PlayerMoveForward(){
     player->isWalk = true;
-    player->joint->SetMotorSpeed(-540 * DEG2RAD);
+    player->spring1->SetMotorSpeed(-10.0f);
 }
 
-void GameB2UnicycleMario::PlayerMoveBack(){
-    player->flipX = true;
+void GameB2Car::PlayerMoveBack(){
     player->isWalk = true;
-    player->joint->SetMotorSpeed(540 * DEG2RAD);
+    player->spring1->SetMotorSpeed(10.0f);
 }
 
-void GameB2UnicycleMario::PlayerStopMove(){
-    player->isWalk = false;
-    player->joint->SetMotorSpeed(0);
+void GameB2Car::PlayerStopMove(){
+    player->spring1->SetMotorSpeed(0.0f);
 }
 
-void GameB2UnicycleMario::PlayerJump(){
-    b2Body *body = player->body;
-    if (player->canJump){
-        player->canJump = false;
-        player->isJump = true;
-        body->ApplyLinearImpulse({0,0.07f}, body->GetWorldCenter(), true);
-    }
+void GameB2Car::PlayerJump(){
+    
 }
 
-void GameB2UnicycleMario::KeyboardInput(ExKeyCode keyCode, ExKeyAction action)
+void GameB2Car::KeyboardInput(ExKeyCode keyCode, ExKeyAction action)
 {
     if(action == ExActionPressed)
     {
@@ -248,39 +214,29 @@ void GameB2UnicycleMario::KeyboardInput(ExKeyCode keyCode, ExKeyAction action)
     }
 }
 
-void GameB2UnicycleMario::Update(GLfloat dt)
+void GameB2Car::Update(GLfloat dt)
 {
     b2Body *body = player->body;
     if(GoButton_Right->mouseState == MOUSE_PRESSED)
     {
         PlayerMoveForward();
-        if(player->isJump && body->GetLinearVelocity().x <= 1){
-            body->ApplyLinearImpulse({0.01f,0}, body->GetWorldCenter(), true);
-        }
     }
     else if(GoButton_Left->mouseState == MOUSE_PRESSED)
     {
         PlayerMoveBack();
-        if (player->isJump &&body->GetLinearVelocity().x >= -1){
-            body->ApplyLinearImpulse({-0.01f,0}, body->GetWorldCenter(), true);
-        }
     }
     
-    //player->Update(&TilemapHelper::gameItems[0], (int)TilemapHelper::gameItems.size());
+    if (abs(body->GetLinearVelocity().x) < 0.05f){
+        player->isWalk = false;
+    }
+    else{
+        player->isWalk = true;
+    }
+    
     player->Update();
-    
-    for (int i=0; i<goombaNum; i++) {
-        goombas[i]->Update(dt);
-    }
-    
-    for (int i=0; i<turtleNum; i++)
-    {
-        turtles[i]->Update(dt);
-    }
     
     //UpdateCameraCenter(&camera, &player, this->Width, this->Height);
     UpdateCameraCenterInsideMap();
-    //UpdateCameraCenterSmoothFollow(&camera, &player, deltaTime, this->Width, this->Height);
     
     float timeStep = 1.0f / 60.0f;
     world->Step(timeStep, 6, 2);
@@ -291,7 +247,7 @@ void GameB2UnicycleMario::Update(GLfloat dt)
     //if(ZOOM < 2.0f){ ZOOM += 0.002f;camera.zoom = ZOOM;}
 }
 
-void GameB2UnicycleMario::Render()
+void GameB2Car::Render()
 {
     Shader colorShader = ResourceManager::GetShader("color");
     colorShader.use();
@@ -312,30 +268,7 @@ void GameB2UnicycleMario::Render()
         TilemapHelper::mapLayers[i]->draw({0.0f,0.0f});
     }
     
-//    for (int i = 0; i < TilemapHelper::gameItems.size(); i++)
-//    {
-//        glm::vec2 pos = {TilemapHelper::gameItems[i].position.x,TilemapHelper::gameItems[i].position.y};
-//        colorRenderer->DrawColor(TilemapHelper::gameItems[i].color, pos ,TilemapHelper::gameItems[i].size);
-//    }
-    
-    glm::vec2 pos = {player->Position.x,player->Position.y-player->Size.y+4.0f};
-    player->Draw(*spriteRenderer,pos);
-    
-    //spriteRenderer->DrawSprite(*oposumSub, {100,100},{36,28});
-    for (int i=0; i<goombaNum; i++)
-    {
-        goombas[i]->Draw(*spriteRenderer);
-    }
-    
-    for (int i=0; i<turtleNum; i++)
-    {
-        turtles[i]->Draw(*spriteRenderer);
-    }
-    
-//    for(int i = 0; i < tiles.size(); i++)
-//    {
-//        Renderer->DrawTile(*tiles[i]);
-//    }
+    player->Draw(*spriteRenderer);
     
     GoButton_Left->Draw(*uiRenderer);
     GoButton_Right->Draw(*uiRenderer);
@@ -348,7 +281,7 @@ void GameB2UnicycleMario::Render()
     camera_b2.rotation = camera.rotation;
     camera_b2.zoom = camera.zoom;
     
-    if(isb2DebugDraw_unicycle)
+    if(isb2DebugDraw_car)
     {
         uint32 flags = 0;
         flags += b2Draw::e_shapeBit;
@@ -359,22 +292,17 @@ void GameB2UnicycleMario::Render()
         
         //g_debugDraw.Flush(glm::mat4(1.0f));
     }
-    else{
-        g_DebugDrawEx.DrawCircle({0,0}, 1.0f, exColor(1.0f,0,0));
-        g_DebugDrawEx.Flush(GetCameraMatrix2D(camera_b2));
-    }
-    
     int d_fps = (int)this->fps;
     std::stringstream ss; ss << d_fps;
     Text->RenderText("fps:"+ss.str(), 200.0f, 10.0f, 0.75f, glm::vec3(1.0f,1.0f,1.0f));
 }
 
-void GameB2UnicycleMario::Release()
+void GameB2Car::Release()
 {
     
 }
 
-void GameB2UnicycleMario::UpdateCameraCenterInsideMap()
+void GameB2Car::UpdateCameraCenterInsideMap()
 {
     float width = this->Width;
     float height = this->Height;

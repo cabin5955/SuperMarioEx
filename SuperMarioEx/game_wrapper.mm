@@ -18,6 +18,7 @@
 #include "game_b2mario.hpp"
 #include "game_tilemap.hpp"
 #include "game_b2unicycle_mario.hpp"
+#include "game_b2car.hpp"
 
 @interface GameWrapper (){
     NSString *preferPath;
@@ -109,7 +110,8 @@ void CommonInit(){
     GameB2Mario::GetInstance()->Init(width, height);
     GameTilemap::GetInstance()->Init(width, height);
     GameB2UnicycleMario::GetInstance()->Init(width, height);
-    Director::GetInstance()->SetRootScene(GameB2UnicycleMario::GetInstance());
+    GameB2Car::GetInstance()->Init(width, height);
+    Director::GetInstance()->SetRootScene(GameB2Car::GetInstance());
     
     Shader colorShader = ResourceManager::GetShader("color");
     gw_colorRenderer = new ColorRenderer(colorShader);

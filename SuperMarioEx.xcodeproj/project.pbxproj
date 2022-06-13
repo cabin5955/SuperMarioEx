@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D20008F22854E46800814E73 /* b2car.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D20008F02854E46800814E73 /* b2car.cpp */; };
 		D251CFDA283B322900D78C89 /* mysunnyland.tmx in Resources */ = {isa = PBXBuildFile; fileRef = D251CFD9283B322900D78C89 /* mysunnyland.tmx */; };
 		D251CFDD283F7A9F00D78C89 /* mymario.tmx in Resources */ = {isa = PBXBuildFile; fileRef = D251CFDC283F7A9F00D78C89 /* mymario.tmx */; };
 		D251CFE2284A561500D78C89 /* tmx_loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251CFE1284A561500D78C89 /* tmx_loader.cpp */; };
 		D251CFE62852DAC100D78C89 /* b2unicycle_player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251CFE42852DAC100D78C89 /* b2unicycle_player.cpp */; };
 		D251CFF12852DFB400D78C89 /* game_b2unicycle_mario.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251CFEF2852DFB400D78C89 /* game_b2unicycle_mario.cpp */; };
 		D251CFF6285384D500D78C89 /* map2body_builder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251CFF4285384D500D78C89 /* map2body_builder.cpp */; };
+		D251CFFE2854391900D78C89 /* debugdrawex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251CFFC2854391900D78C89 /* debugdrawex.cpp */; };
+		D251D0032854E15300D78C89 /* game_b2car.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D251D0012854E15300D78C89 /* game_b2car.cpp */; };
 		D284259F27EEBD9C00DEB423 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D284259E27EEBD9C00DEB423 /* Assets.xcassets */; };
 		D28425A227EEBD9C00DEB423 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D28425A127EEBD9C00DEB423 /* main.m */; };
 		D284269027EF07CE00DEB423 /* CDOpenALSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = D28425B027EF07CC00DEB423 /* CDOpenALSupport.m */; };
@@ -238,6 +241,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D20008F02854E46800814E73 /* b2car.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = b2car.cpp; sourceTree = "<group>"; };
+		D20008F12854E46800814E73 /* b2car.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = b2car.hpp; sourceTree = "<group>"; };
 		D251CFD9283B322900D78C89 /* mysunnyland.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mysunnyland.tmx; sourceTree = "<group>"; };
 		D251CFDC283F7A9F00D78C89 /* mymario.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mymario.tmx; sourceTree = "<group>"; };
 		D251CFE0284A561500D78C89 /* tmx_loader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tmx_loader.hpp; sourceTree = "<group>"; };
@@ -248,6 +253,10 @@
 		D251CFF02852DFB400D78C89 /* game_b2unicycle_mario.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = game_b2unicycle_mario.hpp; sourceTree = "<group>"; };
 		D251CFF4285384D500D78C89 /* map2body_builder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = map2body_builder.cpp; sourceTree = "<group>"; };
 		D251CFF5285384D500D78C89 /* map2body_builder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = map2body_builder.hpp; sourceTree = "<group>"; };
+		D251CFFC2854391900D78C89 /* debugdrawex.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = debugdrawex.cpp; sourceTree = "<group>"; };
+		D251CFFD2854391900D78C89 /* debugdrawex.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = debugdrawex.hpp; sourceTree = "<group>"; };
+		D251D0012854E15300D78C89 /* game_b2car.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = game_b2car.cpp; sourceTree = "<group>"; };
+		D251D0022854E15300D78C89 /* game_b2car.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = game_b2car.hpp; sourceTree = "<group>"; };
 		D284258B27EEBD9A00DEB423 /* SuperMarioEx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperMarioEx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D284259E27EEBD9C00DEB423 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D28425A027EEBD9C00DEB423 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -588,6 +597,8 @@
 				D2BA2A4028201C4700314DB1 /* b2player.hpp */,
 				D251CFE42852DAC100D78C89 /* b2unicycle_player.cpp */,
 				D251CFE52852DAC100D78C89 /* b2unicycle_player.hpp */,
+				D20008F02854E46800814E73 /* b2car.cpp */,
+				D20008F12854E46800814E73 /* b2car.hpp */,
 			);
 			path = players;
 			sourceTree = "<group>";
@@ -633,6 +644,8 @@
 				D2BA2A202818F7F400314DB1 /* game_tilemap.hpp */,
 				D251CFEF2852DFB400D78C89 /* game_b2unicycle_mario.cpp */,
 				D251CFF02852DFB400D78C89 /* game_b2unicycle_mario.hpp */,
+				D251D0012854E15300D78C89 /* game_b2car.cpp */,
+				D251D0022854E15300D78C89 /* game_b2car.hpp */,
 			);
 			path = scenes;
 			sourceTree = "<group>";
@@ -1194,6 +1207,8 @@
 				D28425BC27EF07CC00DEB423 /* resource_manager.hpp */,
 				D28425C527EF07CD00DEB423 /* utils.cpp */,
 				D28425C027EF07CC00DEB423 /* utils.h */,
+				D251CFFC2854391900D78C89 /* debugdrawex.cpp */,
+				D251CFFD2854391900D78C89 /* debugdrawex.hpp */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1554,6 +1569,7 @@
 				D284269327EF07CE00DEB423 /* SimpleAudioEngine_objc.m in Sources */,
 				D251CFE2284A561500D78C89 /* tmx_loader.cpp in Sources */,
 				D2BA2A4128201C4700314DB1 /* b2player.cpp in Sources */,
+				D251CFFE2854391900D78C89 /* debugdrawex.cpp in Sources */,
 				D28426AF27EF07CE00DEB423 /* global.cpp in Sources */,
 				D28426A527EF07CE00DEB423 /* model_cache.cpp in Sources */,
 				D28426AD27EF07CE00DEB423 /* particle_generator.cpp in Sources */,
@@ -1576,6 +1592,7 @@
 				D2842A642801821C00DEB423 /* imgui_draw.cpp in Sources */,
 				D284288C28006F6E00DEB423 /* b2_chain_shape.cpp in Sources */,
 				D28426AB27EF07CE00DEB423 /* resource_manager.cpp in Sources */,
+				D251D0032854E15300D78C89 /* game_b2car.cpp in Sources */,
 				D284289228006F6E00DEB423 /* b2_time_of_impact.cpp in Sources */,
 				D284289328006F6E00DEB423 /* b2_distance.cpp in Sources */,
 				D28426E727EF07CE00DEB423 /* glfm_platform_android.c in Sources */,
@@ -1598,6 +1615,7 @@
 				D284279927F3FE4500DEB423 /* tmx_mem.c in Sources */,
 				D284288B28006F6E00DEB423 /* b2_collide_edge.cpp in Sources */,
 				D284287C28006F6E00DEB423 /* b2_island.cpp in Sources */,
+				D20008F22854E46800814E73 /* b2car.cpp in Sources */,
 				D28427CB27FAA20B00DEB423 /* player.cpp in Sources */,
 				D284269827EF07CE00DEB423 /* utils.cpp in Sources */,
 				D2F263C52828E5CF003B312F /* enemy.cpp in Sources */,
