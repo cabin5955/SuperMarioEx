@@ -12,7 +12,7 @@
 #define PLAYER_HOR_SPD 200.0f
 float ZOOM = 2.0f;
 
-bool isb2DebugDraw = true;
+bool isb2DebugDraw = false;
 GameB2Mario* GameB2Mario::s_instance = nullptr;
 
 WorldContactListener myContactListenerInstance;
@@ -140,7 +140,7 @@ void GameB2Mario::OnEnter(){
     char des[1024] = {0};
     tmx_img_load_func = TilemapHelper::ex_tex_loader;
     tmx_img_free_func = TilemapHelper::ex_free_tex;
-    tmx_map *map = tmx_load(Global::ResFullPath(des,"mario_level1.tmx"));//"mysunnyland.tmx"));
+    tmx_map *map = tmx_load(Global::ResFullPath(des,"level1.tmx"));//"mysunnyland.tmx"));
     goombaNum = 0;
     turtleNum = 0;
     if (!map) {

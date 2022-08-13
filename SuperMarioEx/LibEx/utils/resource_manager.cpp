@@ -9,7 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include "stb_image.h"
+#include "utils.h"
 
 // Instantiate static variables
 std::map<std::string, Texture2D>    ResourceManager::Textures;
@@ -52,37 +52,4 @@ Shader &ResourceManager::loadShaderFromFile(const GLchar *vShaderFile, const GLc
 {
     Shader *shader = new Shader(vShaderFile,fShaderFile);
     return *shader;
-}
-
-Texture2D &ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha)
-{
-    // Create Texture object
-    Texture2D *texture = new Texture2D();
-    if (alpha)
-    {
-        texture->Internal_Format = GL_RGBA;
-        texture->Image_Format = GL_RGBA;
-    }
-    // Load image
-    int width, height, nrComponents;
-    stbi_convert_iphone_png_to_rgb(1);
-    unsigned char* image = stbi_load(file, &width, &height, &nrComponents, 0);
-    GLenum format;
-    if (nrComponents == 1)
-        format = GL_RED;
-    else if (nrComponents == 3)
-        format = GL_RGB;
-    else if (nrComponents == 4)
-        format = GL_RGBA;
-    else
-        format = GL_RED;
-    
-    texture->Internal_Format = format;
-    texture->Image_Format = format;
-    
-    // Now generate texture
-    texture->Generate(width, height, image);
-    // And finally free image data
-    stbi_image_free(image);
-    return *texture;
 }

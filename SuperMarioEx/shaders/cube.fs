@@ -1,6 +1,8 @@
 #version 300 es
 precision mediump float;
 
+in vec3 FragPos;
+in vec3 Normal;
 in vec2 TexCoords;
 
 uniform sampler2D sprite;

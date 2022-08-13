@@ -67,9 +67,10 @@ private:
     GLchar  fullPath[1024];
     GLfloat deltaTime;
     
-    SpriteRenderer      *spriteRenderer;
     SpriteRenderer      *uiRenderer;
     ColorRenderer       *colorRenderer;
+    
+    TextRenderer        *Text;
 
     Player player;
     Button *GoButton_Right,*GoButton_Left,*JumpButton;

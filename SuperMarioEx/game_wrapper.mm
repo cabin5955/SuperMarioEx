@@ -80,9 +80,16 @@ void CommonInit(){
     ResourceManager::LoadShader(Global::ResFullPath(vs,"tilebatch.vs"),Global::ResFullPath(fs,"tilebatch.fs"),
                                 nullptr, "tilebatch");
     
+    ResourceManager::LoadShader(Global::ResFullPath(vs,"simple.vert"),Global::ResFullPath(fs,"simple.frag"),
+                                nullptr, "simple");
+    
+    ResourceManager::LoadShader(Global::ResFullPath(vs,"depth.vs"),Global::ResFullPath(fs,"depth.fs"),
+                                nullptr, "depth");
+    
     // 加载纹理
     ResourceManager::LoadTexture(Global::ResFullPath(des,"background.jpg"), GL_FALSE, "background");
     ResourceManager::LoadTexture(Global::ResFullPath(des,"awesomeface.png"), GL_TRUE, "face");
+    ResourceManager::LoadTexture(Global::ResFullPath(des,"metal.png"), GL_TRUE, "metal");
     
     ResourceManager::LoadTexture(Global::ResFullPath(des,"zaitiaozhan.png"), GL_FALSE, "ui_btn_replay");
     ResourceManager::LoadTexture(Global::ResFullPath(des, "textureMask.png"), GL_TRUE, "mask");
@@ -111,7 +118,8 @@ void CommonInit(){
     GameTilemap::GetInstance()->Init(width, height);
     GameB2UnicycleMario::GetInstance()->Init(width, height);
     GameB2Car::GetInstance()->Init(width, height);
-    Director::GetInstance()->SetRootScene(GameB2Car::GetInstance());
+    
+    Director::GetInstance()->SetRootScene(GameB2Mario::GetInstance());
     
     Shader colorShader = ResourceManager::GetShader("color");
     gw_colorRenderer = new ColorRenderer(colorShader);

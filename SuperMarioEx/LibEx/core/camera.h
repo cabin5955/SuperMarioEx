@@ -18,7 +18,7 @@ enum Camera_Movement {
 // Default camera values
 const float YAW         = -90.0f;
 const float PITCH       =  0.0f;
-const float SPEED       =  2.5f;
+const float SPEED       =  10.0f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
 
@@ -49,6 +49,11 @@ public:
         Yaw = yaw;
         Pitch = pitch;
         updateCameraVectors();
+        
+//        lastX = Global::ScreenWidth / 2.0f;
+//        lastY = Global::ScreenHeight / 2.0f;
+//        TouchDispatcher *dispatcher = TouchDispatcher::get_instance();
+//        dispatcher->addTargetedDelegate(Director::GetInstance()->GetTopScene()->GetSceneID(), this, 0);
     }
     // constructor with scalar values
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -57,6 +62,18 @@ public:
         WorldUp = glm::vec3(upX, upY, upZ);
         Yaw = yaw;
         Pitch = pitch;
+        updateCameraVectors();
+        
+//        lastX = Global::ScreenWidth / 2.0f;
+//        lastY = Global::ScreenHeight / 2.0f;
+//        TouchDispatcher *dispatcher = TouchDispatcher::get_instance();
+//        dispatcher->addTargetedDelegate(Director::GetInstance()->GetTopScene()->GetSceneID(), this, 0);
+    }
+    Camera(glm::vec3 position,glm::vec3 front,glm::vec3 up) :Yaw(YAW), Pitch(PITCH), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+    {
+        Position = position;
+        Front = front;
+        WorldUp = up;
         updateCameraVectors();
     }
 
@@ -110,6 +127,16 @@ public:
             Zoom = 1.0f;
         if (Zoom > 45.0f)
             Zoom = 45.0f;
+    }
+    
+    glm::vec3 GetLeft()
+    {
+        return glm::normalize(glm::cross(Front, WorldUp));
+    }
+    
+    glm::vec3 GetRight()
+    {
+        return glm::normalize(glm::cross(WorldUp, Front));
     }
 
 private:

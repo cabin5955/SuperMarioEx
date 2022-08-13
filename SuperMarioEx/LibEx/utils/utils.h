@@ -12,6 +12,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "color.h"
+#include "glad.h"
+#include "texture.hpp"
 
 #define PI 3.14159265f
 #define DEG2RAD (PI/180.0f)
@@ -29,6 +31,9 @@ glm::mat4 GetCameraMatrix2D(Camera2D camera);
 
 // Get the screen space position for a 2d camera world space position
 glm::vec2 GetWorldToScreen2D(glm::vec2 position, Camera2D camera);
+
+// Loads a single texture from file
+Texture2D &loadTextureFromFile(const GLchar *file, GLboolean alpha);
 
 //Modulus functions, returning only positive values
 int Modulus(int a, int b);

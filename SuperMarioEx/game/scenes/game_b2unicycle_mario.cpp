@@ -14,6 +14,8 @@
 
 bool isb2DebugDraw_unicycle = false;
 GameB2UnicycleMario* GameB2UnicycleMario::s_instance = nullptr;
+int zoomStart= 0;
+int rotationStart = 0;
 
 WorldContactListener unicycleMarioContactListener;
 
@@ -214,9 +216,12 @@ void GameB2UnicycleMario::PlayerMoveBack(){
 void GameB2UnicycleMario::PlayerStopMove(){
     player->isWalk = false;
     player->joint->SetMotorSpeed(0);
+    rotationStart = 1;
 }
 
 void GameB2UnicycleMario::PlayerJump(){
+    rotationStart = 2;
+    return;
     b2Body *body = player->body;
     if (player->canJump){
         player->canJump = false;
@@ -288,7 +293,9 @@ void GameB2UnicycleMario::Update(GLfloat dt)
     b2Vec2 pos = body->GetPosition();
     player->Position = {pos.x*PPM-0.5f*player->Size.x,this->Height-pos.y*PPM+0.4f*player->Size.y, 0};
     
-    //if(ZOOM < 2.0f){ ZOOM += 0.002f;camera.zoom = ZOOM;}
+    //if(zoomStart==1 && ZOOM > 1.0f){ ZOOM -= dt*0.5f;camera.zoom = ZOOM;}
+    if(rotationStart==1 && camera.rotation < 20.0f){ camera.rotation += dt*10;}
+    if(rotationStart==2 && camera.rotation > -20.0f){ camera.rotation -= dt*10;}
 }
 
 void GameB2UnicycleMario::Render()
@@ -312,12 +319,6 @@ void GameB2UnicycleMario::Render()
         TilemapHelper::mapLayers[i]->draw({0.0f,0.0f});
     }
     
-//    for (int i = 0; i < TilemapHelper::gameItems.size(); i++)
-//    {
-//        glm::vec2 pos = {TilemapHelper::gameItems[i].position.x,TilemapHelper::gameItems[i].position.y};
-//        colorRenderer->DrawColor(TilemapHelper::gameItems[i].color, pos ,TilemapHelper::gameItems[i].size);
-//    }
-    
     glm::vec2 pos = {player->Position.x,player->Position.y-player->Size.y+4.0f};
     player->Draw(*spriteRenderer,pos);
     
@@ -331,11 +332,6 @@ void GameB2UnicycleMario::Render()
     {
         turtles[i]->Draw(*spriteRenderer);
     }
-    
-//    for(int i = 0; i < tiles.size(); i++)
-//    {
-//        Renderer->DrawTile(*tiles[i]);
-//    }
     
     GoButton_Left->Draw(*uiRenderer);
     GoButton_Right->Draw(*uiRenderer);
@@ -356,11 +352,9 @@ void GameB2UnicycleMario::Render()
         g_debugDraw.SetFlags(flags);
         world->DebugDraw();
         g_debugDraw.Flush(GetCameraMatrix2D(camera_b2));
-        
-        //g_debugDraw.Flush(glm::mat4(1.0f));
     }
     else{
-        g_DebugDrawEx.DrawCircle({0,0}, 1.0f, exColor(1.0f,0,0));
+        g_DebugDrawEx.DrawCircle({0,0}, 0.1f, exColor(1.0f,0,0));
         g_DebugDrawEx.Flush(GetCameraMatrix2D(camera_b2));
     }
     

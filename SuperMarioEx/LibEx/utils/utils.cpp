@@ -6,7 +6,7 @@
 //
 
 #include "utils.h"
-
+#include "stb_image.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -28,13 +28,46 @@ glm::mat4 GetCameraMatrix2D(Camera2D camera)
     //   1. Move to offset
     //   2. Rotate and Scale
     //   3. Move by -target
-    
+
     glm::mat4 translateMat= glm::translate(matTransform,{-camera.target.x, -camera.target.y, 0.0f});
     glm::mat4 rotatMat = glm::rotate(translateMat, camera.rotation*DEG2RAD, glm::vec3(0.0f, 0.0f, 1.0f));
     glm::mat4 scalMat = glm::scale(rotatMat, {camera.zoom, camera.zoom, 1.0f});
     glm::mat4 finalMat = glm::translate(scalMat,{camera.offset.x, camera.offset.y, 0.0f});
     
     return finalMat;
+}
+
+Texture2D &loadTextureFromFile(const GLchar *file, GLboolean alpha)
+{
+    // Create Texture object
+    Texture2D *texture = new Texture2D();
+    if (alpha)
+    {
+        texture->Internal_Format = GL_RGBA;
+        texture->Image_Format = GL_RGBA;
+    }
+    // Load image
+    int width, height, nrComponents;
+    stbi_convert_iphone_png_to_rgb(1);
+    unsigned char* image = stbi_load(file, &width, &height, &nrComponents, 0);
+    GLenum format;
+    if (nrComponents == 1)
+        format = GL_RED;
+    else if (nrComponents == 3)
+        format = GL_RGB;
+    else if (nrComponents == 4)
+        format = GL_RGBA;
+    else
+        format = GL_RED;
+    
+    texture->Internal_Format = format;
+    texture->Image_Format = format;
+    
+    // Now generate texture
+    texture->Generate(width, height, image);
+    // And finally free image data
+    stbi_image_free(image);
+    return *texture;
 }
 
 glm::vec3 Vector3Transform(glm::vec3 v, glm::mat4 mat)

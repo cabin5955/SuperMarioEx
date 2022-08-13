@@ -1,9 +1,15 @@
 #version 300 es
 precision mediump float;
-in vec2 v_texCoord;
-layout(location = 0) out vec4 outColor;
-uniform sampler2D s_texture;
+
+in vec3 FragPos;
+in vec2 TexCoords;
+in vec3 Normal;
+
+layout(location = 0) out vec4 color;
+
+uniform sampler2D sprite;
+
 void main()
 {
-  outColor = texture( s_texture, v_texCoord );
+    color = texture(sprite, TexCoords);
 }

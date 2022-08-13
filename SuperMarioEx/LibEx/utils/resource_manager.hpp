@@ -42,8 +42,6 @@ private:
     ResourceManager() { }
     // Loads and generates a shader from file
     static Shader    &loadShaderFromFile(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile = nullptr);
-    // Loads a single texture from file
-    static Texture2D &loadTextureFromFile(const GLchar *file, GLboolean alpha);
 };
 
 #endif /* resource_manager_hpp */

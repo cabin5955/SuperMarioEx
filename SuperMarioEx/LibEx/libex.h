@@ -9,6 +9,7 @@
 #define libex_h
 
 typedef enum {
+    ExKeyEscape = 0x1b,
     ExKeyLeft = 0x25,
     ExKeyUp = 0x26,
     ExKeyRight = 0x27,
